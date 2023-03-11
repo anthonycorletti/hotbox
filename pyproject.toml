@@ -1,0 +1,66 @@
+[build-system]
+requires = [
+    "setuptools >=65.0",
+    "wheel >=0.36.2",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyrocloud"
+dynamic = ["version"]
+readme = "README.md"
+license = {text = 'See LICENSE'}
+description = "pyrocloud"
+requires-python = ">=3.10"
+dependencies = [
+    "boto3 >=1.20.10",
+    "typer >=0.4.0",
+    "pydantic >=1.8.2",
+    "rich >=10.12.0",
+]
+[[project.authors]]
+name = "Anthony Corletti"
+email = "anthcor@gmail.com"
+
+[project.scripts]
+pyro = "pyrocloud.cli:app"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=6.2.5",
+    "coverage>=6.1.1",
+    "pytest-cov>=3.0.0",
+]
+dev = [
+    "mypy>=0.910",
+    "black>=21.10b0",
+    "ruff>=0.0.98",
+    "pre-commit>=2.17.0",
+]
+
+[project.urls]
+Documentation = "https://github.com/anthonycorletti/pyrocloud"
+
+[tool.setuptools.dynamic]
+version = {attr = "pyrocloud.__version__"}
+
+[tool.ruff]
+line-length = 88
+ignore = [
+    "D10",
+]
+target-version = "py310"
+extend-ignore = [
+    "D203",
+    "D204",
+    "D213",
+    "D215",
+    "D400",
+    "D404",
+    "D406",
+    "D407",
+    "D408",
+    "D409",
+    "D413",
+    "D415",
+]

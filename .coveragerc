@@ -1,0 +1,9 @@
+[run]
+source =
+    pyrocloud
+    tests
+
+omit =
+    *__init__.py
+
+parallel = True

@@ -23,7 +23,6 @@ apt install iperf3 -y
 # Update permissins
 chmod 777 /dev/kvm
 
-# TODO: install and configure jailer
 # Install Firecracker
 FC_FILE_PATH=$HOME/firecracker
 TMP_FOLDER='/tmp/tmpfc'
@@ -147,8 +146,8 @@ provision_microvm
 
 
 # mkdir -p "$HOME/fc-logs" "$HOME/fc-socks"
-# upperlim="${2:-1}" # TODO: make these templated
-# parallel="${3:-1}" # TODO: make these templated
+# upperlim="${2:-1}"
+# parallel="${3:-1}"
 
 # for ((i=0; i<100; i++)); do
 #   s=$((i * upperlim / 100))

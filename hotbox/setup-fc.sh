@@ -2,12 +2,17 @@
 
 apt update -y
 
-apt install docker.io -y
-
 ARCH="$(uname -m)"
+FC_VERSION="v1.3.1"
+
+# Download firecracker
+wget --no-clobber https://github.com/firecracker-microvm/firecracker/releases/download/${FC_VERSION}/firecracker-${FC_VERSION}-${ARCH}.tgz
+tar -xvf firecracker-${FC_VERSION}-${ARCH}.tgz
+cp release-${FC_VERSION}-${ARCH}/firecracker-${FC_VERSION}-${ARCH} /usr/local/bin/firecracker
+rm -rf firecracker-${FC_VERSION}-${ARCH}.tgz release-${FC_VERSION}-${ARCH}/
 
 # Download a linux kernel binary
-wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/quickstart_guide/${ARCH}/kernels/vmlinux.bin
+wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin
 
 # Download a rootfs
 wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/disks/${ARCH}/ubuntu-18.04.ext4
@@ -18,108 +23,69 @@ wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/disks/${AR
 # Set user read permission on the ssh key
 chmod 400 ./ubuntu-18.04.id_rsa
 
-# Clone the firecracker repository
-git clone https://github.com/firecracker-microvm/firecracker
-
-docker pull public.ecr.aws/firecracker/fcuvm:v52
-./firecracker/tools/devtool build
-
+# Stop the firecracker process if it is already running
 API_SOCKET="./firecracker.socket"
-
 rm -f $API_SOCKET
 
 # Run firecracker
-./firecracker/build/cargo_target/${ARCH}-unknown-linux-musl/debug/firecracker --api-sock "${API_SOCKET}" &
+killall firecracker || true
+firecracker --api-sock "${API_SOCKET}" &
 
-TAP_DEV="tap0"
-TAP_IP="172.16.0.2"
+# set up the kernel boot args
+TAP_DEV="fc-0-tap0"
+MASK_LONG="255.255.255.252"
 MASK_SHORT="/30"
+FC_IP="169.254.0.21"
+TAP_IP="169.254.0.22"
 
-# Setup network interface
+KERNEL_BOOT_ARGS="rw console=ttyS0 noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${FC_IP}::${TAP_IP}:${MASK_LONG}::eth0:off"
+
+# set up a tap network interface for the Firecracker VM to user
 ip link del "$TAP_DEV" 2> /dev/null || true
-ip tuntap add dev "$TAP_DEV" mode tap
+ip tuntap add "$TAP_DEV" mode tap
+# sysctl -w net.ipv4.conf.${TAP_DEV}.proxy_arp=1 > /dev/null
+# sysctl -w net.ipv6.conf.${TAP_DEV}.disable_ipv6=1 > /dev/null
 ip addr add "${TAP_IP}${MASK_SHORT}" dev "$TAP_DEV"
-ip link set dev "$TAP_DEV" up
+ip link set "$TAP_DEV" up
+FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
-# Enable ip forwarding
-sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+# enable packet forwarding (for internet access)
+DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
+sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+sudo iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
+sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
 
-# Set up microVM internet access
-iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE || true
-iptables -D FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT || true
-iptables -D FORWARD -i tap0 -o eth0 -j ACCEPT || true
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables -I FORWARD 1 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -I FORWARD 1 -i tap0 -o eth0 -j ACCEPT
+# make a configuration file
+cat <<EOF > fc-config.json
+{
+  "boot-source": {
+    "kernel_image_path": "vmlinux.bin",
+    "boot_args": "$KERNEL_BOOT_ARGS"
+  },
+  "drives": [
+    {
+      "drive_id": "rootfs",
+      "path_on_host": "ubuntu-18.04.ext4",
+      "is_root_device": true,
+      "is_read_only": false
+    }
+  ],
+  "network-interfaces": [
+      {
+          "iface_id": "$DEVICE_NAME",
+          "guest_mac": "$FC_MAC",
+          "host_dev_name": "$TAP_DEV"
+      }
+  ],
+  "machine-config": {
+    "vcpu_count": 2,
+    "mem_size_mib": 1024
+  }
+}
+EOF
 
-API_SOCKET="./firecracker.socket"
-LOGFILE="./firecracker.log"
+# start firecracker
+firecracker --no-api --config-file fc-config.json
 
-# Create log file
-touch $LOGFILE
-
-# Set log file
-curl -X PUT --unix-socket "${API_SOCKET}" \
-    --data "{
-        \"log_path\": \"${LOGFILE}\",
-        \"level\": \"Debug\",
-        \"show_level\": true,
-        \"show_log_origin\": true
-    }" \
-    "http://localhost/logger"
-
-KERNEL="./vmlinux.bin"
-KERNEL_BOOT_ARGS="console=ttyS0 reboot=k panic=1 pci=off"
-
-ARCH=$(uname -m)
-
-if [ ${ARCH} = "aarch64" ]; then
-    KERNEL_BOOT_ARGS="keep_bootcon ${KERNEL_BOOT_ARGS}"
-fi
-
-# Set boot source
-curl -X PUT --unix-socket "${API_SOCKET}" \
-    --data "{
-        \"kernel_image_path\": \"${KERNEL}\",
-        \"boot_args\": \"${KERNEL_BOOT_ARGS}\"
-    }" \
-    "http://localhost/boot-source"
-
-ROOTFS="./ubuntu-18.04.ext4"
-
-# Set rootfs
-curl -X PUT --unix-socket "${API_SOCKET}" \
-    --data "{
-        \"drive_id\": \"rootfs\",
-        \"path_on_host\": \"${ROOTFS}\",
-        \"is_root_device\": true,
-        \"is_read_only\": false
-    }" \
-    "http://localhost/drives/rootfs"
-
-# The IP address of a guest is derived from its MAC address with
-# `fcnet-setup.sh`, this has been pre-configured in the guest rootfs. It is
-# important that `TAP_IP` and `FC_MAC` match this.
-FC_MAC="$(cat /sys/class/net/tap0/address)"
-
-# Set network interface
-curl -X PUT --unix-socket "${API_SOCKET}" \
-    --data "{
-        \"iface_id\": \"net1\",
-        \"guest_mac\": \"$FC_MAC\",
-        \"host_dev_name\": \"$TAP_DEV\"
-    }" \
-    "http://localhost/network-interfaces/net1"
-
-# API requests are handled asynchronously, it is important the configuration is
-# set, before `InstanceStart`.
-sleep 1
-
-# Start microVM
-curl -X PUT --unix-socket "${API_SOCKET}" \
-    --data "{
-        \"action_type\": \"InstanceStart\"
-    }" \
-    "http://localhost/actions"
-
-# ssh -i ./ubuntu-18.04.id_rsa 172.16.0.1
+# ssh -o StrictHostKeyChecking=false -i ubuntu-18.04.id_rsa root@169.254.0.21

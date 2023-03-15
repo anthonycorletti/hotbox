@@ -52,7 +52,6 @@ class HotboxEc2Service(HotboxService):
             Monitoring=spec.monitoring_enabled,
             SecurityGroupIds=spec.security_group_ids,
             BlockDeviceMappings=spec.block_device_mappings,
-            # UserData=spec.user_data(),
         )
 
     def get(self, region: str) -> Dict:

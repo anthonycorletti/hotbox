@@ -55,61 +55,6 @@ class HotboxEc2Spec(HotboxAwsSpec):
         },
     ]
 
-    def user_data(self, num_microvm: int = 1) -> str:
-        # TODO: add jailer!
-        return "\n".join(  # noqa: E501
-            [
-                "#!/bin/bash -x",
-                "apt update -y",
-                "apt install -y iperf3",
-                "\n".join(
-                    [
-                        "sudo tee -a /etc/security/limits.conf <<EOL",
-                        "$USER soft nproc 16384",
-                        "$USER hard nproc 16384",
-                        "EOL",
-                    ]
-                ),
-                "sudo chmod 777 /dev/kvm",
-                "sysctl -wq net.ipv4.conf.all.forwarding=1",
-                "sysctl -wq net.ipv4.neigh.default.gc_thresh1=1024",
-                "sysctl -wq net.ipv4.neigh.default.gc_thresh2=2048",
-                "sysctl -wq net.ipv4.neigh.default.gc_thresh3=4096",
-                "FC_FILE_PATH=$HOME/firecracker",
-                "TMP_FOLDER='/tmp/tmpfc'",
-                "TMP_ARCHIVE='/tmp/tmpfcrelease.tgz'",
-                (
-                    "wget 'https://github.com/firecracker-microvm/firecracker/"
-                    "releases/download/v1.3.1/firecracker-v1.3.1-aarch64.tgz' "
-                    "-O $TMP_ARCHIVE"
-                ),
-                "mkdir -p $TMP_FOLDER",
-                "tar -xvf $TMP_ARCHIVE -C $TMP_FOLDER",
-                (
-                    "cp $TMP_FOLDER/release-v1.3.1-aarch64/firecracker-v1.3.1-aarch64"
-                    " $FC_FILE_PATH"
-                ),
-                'rm -rf "$TMP_FOLDER"',
-                'rm "$TMP_ARCHIVE"',
-                "KERNEL_FILE_PATH=$HOME/vmlinux",
-                (
-                    'wget -q "https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/'
-                    'kernels/aarch64/vmlinux-4.14.bin" -O $KERNEL_FILE_PATH'
-                ),
-                'ROOTFS_FILE_PATH="$HOME/rootfs.ext4"',
-                'ROOTFS_KEY_PATH="$TEST_RES/rootfs.id_rsa"',
-                (
-                    'wget -q "https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/'
-                    'disks/aarch64/ubuntu-20.04.ext4" -O $ROOTFS_FILE_PATH'
-                ),
-                (
-                    'wget -q "https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/'
-                    'disks/aarch64/ubuntu-20.04.id_rsa" -O $ROOTFS_KEY_PATH'
-                ),
-                "chmod 400 $ROOTFS_KEY_PATH",
-            ]
-        )
-
 
 class HotboxFcMicrovmSpec(HotboxSpec):
     ...

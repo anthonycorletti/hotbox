@@ -1,6 +1,6 @@
 [run]
 source =
-    pyrocloud
+    hotbox
     tests
 
 omit =

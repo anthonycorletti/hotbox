@@ -1,14 +1,14 @@
 from typing import Dict, List
 
-from pyrocloud.services import PyroService
-from pyrocloud.types import PyroAppSpec
+from hotbox.services import HotboxService
+from hotbox.types import HotboxAppSpec
 
 
-class PyroAppService(PyroService):
+class HotboxAppService(HotboxService):
     def __init__(self) -> None:
         super().__init__()
 
-    def create(self, spec: PyroAppSpec) -> Dict:
+    def create(self, spec: HotboxAppSpec) -> Dict:
         return {}
 
     def get(self, ids: List[str]) -> Dict:
@@ -18,4 +18,4 @@ class PyroAppService(PyroService):
         return {}
 
 
-pyro_app_service = PyroAppService()
+hb_app_service = HotboxAppService()

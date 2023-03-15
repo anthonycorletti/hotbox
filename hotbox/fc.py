@@ -1,14 +1,14 @@
 from typing import Dict, List
 
-from pyrocloud.services import PyroService
-from pyrocloud.types import PyroFcBridgeSpec, PyroFcMicrovmSpec, PyroFcTapSpec
+from hotbox.services import HotboxService
+from hotbox.types import HotboxFcBridgeSpec, HotboxFcMicrovmSpec, HotboxFcTapSpec
 
 
-class PyroFcBridgeService(PyroService):
+class HotboxFcBridgeService(HotboxService):
     def __init__(self) -> None:
         super().__init__()
 
-    def create(self, spec: PyroFcBridgeSpec) -> Dict:
+    def create(self, spec: HotboxFcBridgeSpec) -> Dict:
         return {}
 
     def get(self) -> Dict:
@@ -18,11 +18,11 @@ class PyroFcBridgeService(PyroService):
         return {}
 
 
-class PyroFcMicrovmService(PyroService):
+class HotboxFcMicrovmService(HotboxService):
     def __init__(self) -> None:
         super().__init__()
 
-    def create(self, spec: PyroFcMicrovmSpec) -> Dict:
+    def create(self, spec: HotboxFcMicrovmSpec) -> Dict:
         return {}
 
     def get(self) -> Dict:
@@ -32,11 +32,11 @@ class PyroFcMicrovmService(PyroService):
         return {}
 
 
-class PyroFcTapService(PyroService):
+class HotboxFcTapService(HotboxService):
     def __init__(self) -> None:
         super().__init__()
 
-    def create(self, spec: PyroFcTapSpec) -> Dict:
+    def create(self, spec: HotboxFcTapSpec) -> Dict:
         return {}
 
     def get(self) -> Dict:
@@ -46,6 +46,6 @@ class PyroFcTapService(PyroService):
         return {}
 
 
-pyro_fc_bridge_service = PyroFcBridgeService()
-pyro_fc_microvm_service = PyroFcMicrovmService()
-pyro_fc_tap_service = PyroFcTapService()
+hb_fc_bridge_service = HotboxFcBridgeService()
+hb_fc_microvm_service = HotboxFcMicrovmService()
+hb_fc_tap_service = HotboxFcTapService()

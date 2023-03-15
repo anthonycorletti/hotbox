@@ -3,9 +3,9 @@ from typing import List, Optional
 
 from typer import Argument, FileText, Option, Typer, echo
 
-from pyrocloud.const import DEFAULTS, DESC, NAME, SERVICE_MAP, TYPE_MAP
-from pyrocloud.types import PyroKind, PyroVersion
-from pyrocloud.utils import handle_spec, json_serializer
+from hotbox.const import DEFAULTS, DESC, NAME, SERVICE_MAP, TYPE_MAP
+from hotbox.types import HotboxKind, HotboxVersion
+from hotbox.utils import handle_spec, json_serializer
 
 app = Typer(
     name=NAME,
@@ -28,7 +28,7 @@ main_callback.__doc__ = NAME
     no_args_is_help=True,
 )
 def create(
-    kind: PyroKind,
+    kind: HotboxKind,
     spec: FileText = Option(
         ...,
         allow_dash=True,
@@ -37,7 +37,7 @@ def create(
     _spec = handle_spec(spec)
     _spec["kind"] = kind
     if "version" not in _spec:
-        _spec["version"] = DEFAULTS[PyroVersion]
+        _spec["version"] = DEFAULTS[HotboxVersion]
     content = TYPE_MAP[kind](**_spec)
     assert (
         type(content) == TYPE_MAP[kind]
@@ -58,7 +58,7 @@ def create(
     no_args_is_help=True,
 )
 def get(
-    kind: PyroKind,
+    kind: HotboxKind,
     region: Optional[str] = Option(
         None,
         help="AWS Region of resources to delete.",
@@ -80,7 +80,7 @@ def get(
     no_args_is_help=True,
 )
 def delete(
-    kind: PyroKind,
+    kind: HotboxKind,
     ids: List[str] = Argument(..., help="IDs of resources to delete."),
     region: Optional[str] = Option(
         None,

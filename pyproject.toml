@@ -6,11 +6,11 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pyrocloud"
+name = "hotbox"
 dynamic = ["version"]
 readme = "README.md"
 license = {text = 'See LICENSE'}
-description = "pyrocloud"
+description = "hotbox"
 requires-python = ">=3.10"
 dependencies = [
     "boto3 >=1.20.10",
@@ -23,7 +23,7 @@ name = "Anthony Corletti"
 email = "anthcor@gmail.com"
 
 [project.scripts]
-pyro = "pyrocloud.cli:app"
+hotbox = "hotbox.cli:app"
 
 [project.optional-dependencies]
 test = [
@@ -39,10 +39,10 @@ dev = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/anthonycorletti/pyrocloud"
+Documentation = "https://github.com/anthonycorletti/hotbox"
 
 [tool.setuptools.dynamic]
-version = {attr = "pyrocloud.__version__"}
+version = {attr = "hotbox.__version__"}
 
 [tool.ruff]
 line-length = 88

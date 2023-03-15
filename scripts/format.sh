@@ -1,4 +1,4 @@
 #!/bin/sh -ex
 
-black pyrocloud tests scripts
-ruff pyrocloud tests scripts --fix
+black hotbox tests scripts
+ruff hotbox tests scripts --fix

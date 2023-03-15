@@ -1,4 +1,4 @@
-from pyrocloud import __version__
+from hotbox import __version__
 
 
 def test_version() -> None:

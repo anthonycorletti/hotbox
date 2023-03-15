@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class PyroService(ABC):
+class HotboxService(ABC):
     @abstractmethod
     def create(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError("Must implement create().")

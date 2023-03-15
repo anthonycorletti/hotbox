@@ -15,7 +15,7 @@ from hotbox.types import (
 )
 
 NAME = "hotbox"
-DESC = "🔥 Run your apps on Firecracker MicroVMs in the cloud ☁️"
+DESC = "🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️"
 
 TYPE_MAP: Dict[HotboxKind, Type[HotboxSpec]] = {
     HotboxKind.ec2: HotboxEc2Spec,

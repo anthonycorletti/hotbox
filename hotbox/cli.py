@@ -61,7 +61,7 @@ def get(
     kind: HotboxKind,
     region: Optional[str] = Option(
         None,
-        help="AWS Region of resources to delete.",
+        help="AWS Region.",
     ),
 ) -> None:
     service = SERVICE_MAP[kind]
@@ -84,7 +84,7 @@ def delete(
     ids: List[str] = Argument(..., help="IDs of resources to delete."),
     region: Optional[str] = Option(
         None,
-        help="AWS Region of resources to delete.",
+        help="AWS Region.",
     ),
 ) -> None:
     service = SERVICE_MAP[kind]

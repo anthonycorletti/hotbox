@@ -1,0 +1,26 @@
+#!/bin/bash -ex
+
+apt-get update -y
+cd $HOME
+
+ARCH="$(uname -m)"
+FC_VERSION="{{ firecracker_version }}"
+
+# Download firecracker
+wget --no-clobber https://github.com/firecracker-microvm/firecracker/releases/download/${FC_VERSION}/firecracker-${FC_VERSION}-${ARCH}.tgz
+tar -xvf firecracker-${FC_VERSION}-${ARCH}.tgz
+cp release-${FC_VERSION}-${ARCH}/firecracker-${FC_VERSION}-${ARCH} /usr/local/bin/firecracker
+cp release-${FC_VERSION}-${ARCH}/jailer-${FC_VERSION}-${ARCH} /usr/local/bin/jailer
+rm -rf firecracker-${FC_VERSION}-${ARCH}.tgz release-${FC_VERSION}-${ARCH}/
+
+# Install docker
+apt-get remove docker docker-engine docker.io containerd runc -y
+apt-get install ca-certificates curl gnupg -y
+mkdir -m 0755 -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update -y
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y

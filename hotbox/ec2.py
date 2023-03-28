@@ -1,12 +1,14 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import boto3
+from jinja2 import Template
 
+from hotbox.const import DEFAULT_USERDATA_TEMPLATE_FILEPATH
 from hotbox.services import HotboxService
-from hotbox.types import HotboxEc2Spec
+from hotbox.types import Ec2Spec
 
 
-class HotboxEc2Service(HotboxService):
+class Ec2Service(HotboxService):
     def __init__(self) -> None:
         super().__init__()
         self.aws_client = boto3.client
@@ -18,16 +20,14 @@ class HotboxEc2Service(HotboxService):
         virtualization_type: str = "hvm",
         architecture: str = "arm64",
         root_device_type: str = "ebs",
+        owner_id: str = "099720109477",
     ) -> str:
         filters = [
-            {
-                "Name": "name",
-                "Values": [name],
-            },
+            {"Name": "name", "Values": [name]},
             {"Name": "virtualization-type", "Values": [virtualization_type]},
             {"Name": "architecture", "Values": [architecture]},
             {"Name": "root-device-type", "Values": [root_device_type]},
-            {"Name": "owner-id", "Values": ["099720109477"]},
+            {"Name": "owner-id", "Values": [owner_id]},
         ]
         images = client.describe_images(Filters=filters)
         images_sorted = sorted(
@@ -37,14 +37,20 @@ class HotboxEc2Service(HotboxService):
         )
         return images_sorted[0]["ImageId"]
 
-    def create(self, spec: HotboxEc2Spec) -> Dict:
+    def _template_userdata(
+        self,
+        firecracker_version: str,
+        userdata_template_filepath: Optional[str] = None,
+    ) -> str:
+        if userdata_template_filepath is None:
+            userdata_template_filepath = DEFAULT_USERDATA_TEMPLATE_FILEPATH
+        with open(userdata_template_filepath) as f:
+            return Template(f.read()).render(firecracker_version=firecracker_version)
+
+    def create(self, spec: Ec2Spec, firecracker_version: str) -> Dict:
         ec2_client = self.aws_client("ec2", region_name=spec.region)
-        if not spec.image_id:
-            spec.image_id = self.get_image_id(
-                client=ec2_client,
-            )
         return ec2_client.run_instances(
-            ImageId=spec.image_id,
+            ImageId=self.get_image_id(client=ec2_client),
             KeyName=spec.key_name,
             InstanceType=spec.instance_type,
             MinCount=spec.min_count,
@@ -52,6 +58,7 @@ class HotboxEc2Service(HotboxService):
             Monitoring=spec.monitoring_enabled,
             SecurityGroupIds=spec.security_group_ids,
             BlockDeviceMappings=spec.block_device_mappings,
+            UserData=self._template_userdata(firecracker_version=firecracker_version),
         )
 
     def get(self, region: str) -> Dict:
@@ -63,4 +70,4 @@ class HotboxEc2Service(HotboxService):
         return ec2_client.terminate_instances(InstanceIds=ids)
 
 
-hb_ec2_service = HotboxEc2Service()
+ec2_svc = Ec2Service()

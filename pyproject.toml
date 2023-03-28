@@ -17,25 +17,27 @@ dependencies = [
     "typer >=0.4.0",
     "pydantic >=1.8.2",
     "rich >=10.12.0",
+    "jinja2 >=3.0.2",
+    "paramiko >=2.8.0",
 ]
 [[project.authors]]
 name = "Anthony Corletti"
 email = "anthcor@gmail.com"
 
 [project.scripts]
-hotbox = "hotbox.cli:app"
+hotbox = "hotbox.cli.main:app"
 
 [project.optional-dependencies]
 test = [
-    "pytest>=6.2.5",
-    "coverage>=6.1.1",
-    "pytest-cov>=3.0.0",
+    "pytest >=6.2.5",
+    "coverage >=6.1.1",
+    "pytest-cov >=3.0.0",
 ]
 dev = [
-    "mypy>=0.910",
-    "black>=21.10b0",
-    "ruff>=0.0.98",
-    "pre-commit>=2.17.0",
+    "mypy >=0.910",
+    "black >=21.10b0",
+    "ruff >=0.0.98",
+    "pre-commit >=2.17.0",
 ]
 
 [project.urls]
@@ -45,10 +47,9 @@ Documentation = "https://github.com/anthonycorletti/hotbox"
 version = {attr = "hotbox.__version__"}
 
 [tool.ruff]
+select = ["E", "F", "I"]
+ignore = ["D10"]
 line-length = 88
-ignore = [
-    "D10",
-]
 target-version = "py310"
 extend-ignore = [
     "D203",

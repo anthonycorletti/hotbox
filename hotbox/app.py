@@ -1,14 +1,14 @@
 from typing import Dict, List
 
 from hotbox.services import HotboxService
-from hotbox.types import HotboxAppSpec
+from hotbox.types import AppSpec
 
 
-class HotboxAppService(HotboxService):
+class AppService(HotboxService):
     def __init__(self) -> None:
         super().__init__()
 
-    def create(self, spec: HotboxAppSpec) -> Dict:
+    def create(self, spec: AppSpec) -> Dict:
         return {}
 
     def get(self, ids: List[str]) -> Dict:
@@ -18,4 +18,4 @@ class HotboxAppService(HotboxService):
         return {}
 
 
-hb_app_service = HotboxAppService()
+app_svc = AppService()

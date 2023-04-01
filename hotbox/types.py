@@ -1,7 +1,22 @@
+from datetime import datetime
 from enum import Enum, unique
 from typing import Any, Dict, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictStr
+
+
+@unique
+class Language(str, Enum):
+    go = "go"
+    # python = "py"
+
+
+@unique
+class Image(str, Enum):
+    """Image is the name of the Docker image to use for Hotbox."""
+
+    go = "golang:1.20"
+    # python = "python:3.11-slim"
 
 
 @unique
@@ -42,5 +57,11 @@ class Ec2Spec(AwsSpec):
     ]
 
 
-class AppSpec(HotboxSpec):
-    ...
+class HealthcheckResponse(BaseModel):
+    message: StrictStr
+    version: StrictStr
+    time: datetime
+
+
+class CreateAppRequest(BaseModel):
+    app_id: StrictStr

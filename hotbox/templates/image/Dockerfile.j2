@@ -1,4 +1,4 @@
-FROM golang:1.20
+FROM {{ base_image }}
 
 RUN cd /tmp && wget http://dl-cdn.alpinelinux.org/alpine/v3.14/releases/aarch64/alpine-minirootfs-3.14.9-aarch64.tar.gz
 

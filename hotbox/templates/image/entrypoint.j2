@@ -1,11 +1,6 @@
 #!/bin/bash
 
-# run this container like so
-# docker run --rm --privileged -v /path/to/code:/go/src/gopath/to/code firecracker-builder
-
 set -ex
-
-ARCH=$(uname -m)
 
 dd if=/dev/zero of=/tmp/rootfs bs=1M count=50
 mkfs.ext4 /tmp/rootfs
@@ -20,13 +15,9 @@ CODEDIR=${CODEDIR:-/opt/code}
 cp -r  /tmp/overlay/* /tmp/tmp/
 
 cd $CODEDIR
-go get -d -v ./...
-CGO_ENABLED=0 go build -o /tmp/tmp/usr/local/bin/fcvm-app # <--- this is the binary that will be run in the microvm
 
-# cat > /tmp/tmp/usr/buildenv <<EOF
-# IP=$IP
-# GATEWAY=$GATEWAY
-# EOF
+{{ install }}
+{{ build }}
 
 cat > /tmp/tmp/prepare.sh <<EOF
 passwd root -d root

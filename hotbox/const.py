@@ -1,3 +1,7 @@
 NAME = "hotbox"
 DESC = "🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️"
-DEFAULT_USERDATA_TEMPLATE_FILEPATH = "hotbox/userdata/ec2/provision.sh.j2"
+API_V0 = "/api/v0"
+TEMPLATES_HOME = "hotbox/templates"
+DEFAULT_USERDATA_TEMPLATE_FILEPATH = f"{TEMPLATES_HOME}/ec2_userdata.sh.j2"
+DEFAULT_RUN_APP_TEMPLATE_FILEPATH = f"{TEMPLATES_HOME}/run_app.sh.j2"
+DEFAULT_LANG_TEMPLATE_DIR = f"{TEMPLATES_HOME}/lang"

@@ -1,21 +1,24 @@
-from typing import Dict, List
-
 from hotbox.services import HotboxService
-from hotbox.types import AppSpec
 
 
 class AppService(HotboxService):
     def __init__(self) -> None:
         super().__init__()
 
-    def create(self, spec: AppSpec) -> Dict:
-        return {}
+    def create_app_bundle(self) -> None:
+        pass
 
-    def get(self, ids: List[str]) -> Dict:
-        return {}
+    def upload_app_bundle(self) -> None:
+        pass
 
-    def delete(self, ids: List[str]) -> Dict:
-        return {}
+    def create(self) -> None:
+        pass
+
+    def get(self) -> None:
+        pass
+
+    def delete(self) -> None:
+        pass
 
 
 app_svc = AppService()

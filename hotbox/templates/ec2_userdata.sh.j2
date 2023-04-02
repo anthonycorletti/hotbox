@@ -30,7 +30,7 @@ curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gp
 
 # Install hotbox
 apt install python3-pip -y
-pip3 install hotbox
+pip3 install hotbox>=0.0.0a0
 
 # Run hotbox
 hotbox server run --port 8420 &

@@ -1,11 +1,9 @@
 name: test
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize]
+  release:
+    types:
+      - created
 
 jobs:
   test:
@@ -30,16 +28,8 @@ jobs:
           cache: "pip"
           cache-dependency-path: "pyproject.toml"
 
-      - name: install dependencies
-        run: ./scripts/install.sh
+      - name: build
+        run: ./scripts/build.sh
 
-      - name: run tests
-        run: ./scripts/test.sh
-
-      - name: upload coverage
-        if: github.ref == 'refs/heads/main'
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          fail_ci_if_error: true
+      - name: publish
+        run: ./scripts/publish.sh

@@ -19,6 +19,10 @@ class Image(str, Enum):
     # python = "python:3.11-slim"
 
 
+class Routes(str, Enum):
+    create_apps = "/apps"
+
+
 @unique
 class Ec2MetalType(str, Enum):
     """Ec2MetalType is the type of EC2 instance to use for Hotbox."""

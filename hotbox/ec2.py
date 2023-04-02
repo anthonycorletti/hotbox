@@ -4,13 +4,11 @@ import boto3
 from jinja2 import Template
 
 from hotbox.const import DEFAULT_USERDATA_TEMPLATE_FILEPATH
-from hotbox.services import HotboxService
 from hotbox.types import Ec2Spec
 
 
-class Ec2Service(HotboxService):
+class Ec2Service:
     def __init__(self) -> None:
-        super().__init__()
         self.aws_client = boto3.client
 
     def get_image_id(

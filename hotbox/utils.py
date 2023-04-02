@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import uuid
 from datetime import date, datetime
@@ -32,6 +33,12 @@ def generate_app_id() -> str:
 
 
 def determine_lang(app_code_path: str) -> Language:
-    # recursively go through files and if the extension of the file is is
-    # in the Langugae enum, return that language
-    pass
+    for _, _, filenames in os.walk(app_code_path):
+        for filename in filenames:
+            lang = os.path.splitext(filename)[-1].split(".")[-1]
+            if lang in list(Language):
+                return Language(lang)
+    raise ValueError(
+        "Unsupported application content. "
+        f"Please use a supported language ({Language.__members__.values()})."
+    )

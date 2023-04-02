@@ -1,4 +1,5 @@
 import json
+import tempfile
 
 from typer import Argument, Exit, FileText, Option, Typer, echo
 
@@ -84,16 +85,18 @@ def create_app(
     echo("Creating app!")
     app_id = generate_app_id()
     lang = determine_lang(app_code_path=app_code_path)
-    build_image = Image(lang)
-    bundle_path = app_svc.create_app_bundle(
-        app_id=app_id,
-        app_code_path=app_code_path,
-        build_image=build_image,
-        vcpu_count=vcpu_count,
-        mem_size_mib=mem_size_mib,
-    )
-    response = app_svc.upload_app_bundle(
-        app_id=app_id,
-        bundle_path=bundle_path,
-    )
+    build_image = getattr(Image, lang.name)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        bundle_path = app_svc.create_app_bundle(
+            app_id=app_id,
+            app_code_path=app_code_path,
+            build_image=build_image,
+            vcpu_count=vcpu_count,
+            mem_size_mib=mem_size_mib,
+            tmpdir=tmpdir,
+        )
+        response = app_svc.upload_app_bundle(
+            app_id=app_id,
+            bundle_path=bundle_path,
+        )
     echo(response)

@@ -99,4 +99,12 @@ def create_app(
             app_id=app_id,
             bundle_path=bundle_path,
         )
-    echo(response)
+    if response is None:
+        echo("Failed to upload app bundle!")
+        raise Exit(1)
+    echo(
+        json.dumps(
+            response,
+            default=json_serializer,
+        )
+    )

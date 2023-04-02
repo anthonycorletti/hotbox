@@ -11,7 +11,7 @@ class _Env(BaseSettings):
         description="API Secret Key",
     )
     HOTBOX_API_URL: str = Field(
-        "http://localhost:8000/api/v0",
+        "http://localhost:8420/api/v0",
         env="HOTBOX_API_URL",
         description="Hotbox API URL",
     )

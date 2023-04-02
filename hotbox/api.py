@@ -53,7 +53,9 @@ async def create_app(
         bundle_path,
         _create_app_request.app_id,
     )
-    return JSONResponse({"message": "App running in the cloud!"})
+    return JSONResponse(
+        status_code=200, content={"message": "App running in the cloud!"}
+    )
 
 
 api.include_router(health_router)

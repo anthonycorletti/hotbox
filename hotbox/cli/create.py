@@ -102,9 +102,4 @@ def create_app(
     if response is None:
         echo("Failed to upload app bundle!")
         raise Exit(1)
-    echo(
-        json.dumps(
-            response,
-            default=json_serializer,
-        )
-    )
+    return json.loads(response).get("message")

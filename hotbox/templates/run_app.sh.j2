@@ -13,7 +13,6 @@ firecracker --api-sock "${API_SOCKET}" &
 # set up the kernel boot args and env vars
 MASK_LONG="255.255.255.252"
 MASK_SHORT="/30"
-TAP_DEV="fc-{{ app_id }}-tap0"
 
 # Based on how many taps we have, we need to set up the IP addresses
 # for the gateway and the tap interface. Pick the first available IP
@@ -29,6 +28,7 @@ DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:off"
 
 # set up a tap network interface for the Firecracker VM to use
+TAP_DEV="fc-$GW_ID-tap0"
 ip link del "$TAP_DEV" 2> /dev/null || true
 ip tuntap add "$TAP_DEV" mode tap
 ip addr add "${TAP_IP}${MASK_SHORT}" dev "$TAP_DEV"

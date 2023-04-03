@@ -29,7 +29,10 @@ app_router = APIRouter(
 )
 
 
-@health_router.get("/health", response_model=HealthcheckResponse)
+@health_router.get(
+    "/healthcheck",
+    response_model=HealthcheckResponse,
+)
 async def healthcheck() -> HealthcheckResponse:
     return HealthcheckResponse(
         message="ok",
@@ -38,7 +41,10 @@ async def healthcheck() -> HealthcheckResponse:
     )
 
 
-@app_router.post("/apps", response_class=JSONResponse)
+@app_router.post(
+    "/apps",
+    response_class=JSONResponse,
+)
 async def create_app(
     background_tasks: BackgroundTasks,
     create_app_request: Json = Form(...),
@@ -54,7 +60,8 @@ async def create_app(
         _create_app_request.app_id,
     )
     return JSONResponse(
-        status_code=200, content={"message": "App running in the cloud!"}
+        status_code=200,
+        content={"message": "App running in the cloud!"},
     )
 
 

@@ -28,11 +28,14 @@ apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docke
 curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list && apt update -y && apt install ngrok -y
 
 # Install hotbox
-apt install python3-pip -y
-pip3 install "hotbox>=0.0.0"
+apt install software-properties-common -y
+add-apt-repository ppa:deadsnakes/ppa -y
+apt install python3.10 python3.10-distutils -y
+python3.10 -m pip install --upgrade pip
+python3.10 -m pip install hotbox
 
 # Run hotbox
 hotbox server run --port 8420 &
 
 # Run ngrok
-ngrok http 8420 &
+ngrok http 8420 --log=stdout > ngrok.log &

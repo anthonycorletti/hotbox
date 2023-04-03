@@ -54,6 +54,7 @@ docker run --rm --privileged --env IP=$TAP_IP$MASK_SHORT --env GATEWAY=$GW_IP -v
 # NOTE: remove the --env vars if you don't want to set up networking
 ROOTFSDIR="$(readlink -f {{ app_id }}_fs)"
 mv $CODEDIR/rootfs $ROOTFSDIR
+ROOTFS_PATH_ON_HOST="{{ app_id }}_fs"
 
 #
 # # Download a rootfs example
@@ -92,7 +93,7 @@ cat <<EOF > fc-{{ app_id }}-config.json
   ],
   "machine-config": {
     "vcpu_count": {{ vcpu_count }},
-    "mem_size_mib": {{ mem_size_mib }},
+    "mem_size_mib": {{ mem_size_mib }}
   }
 }
 EOF

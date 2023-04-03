@@ -5,11 +5,6 @@ from pydantic import BaseSettings, Field
 
 
 class _Env(BaseSettings):
-    API_SECRET_KEY: str = Field(
-        ...,
-        env="API_SECRET_KEY",
-        description="API Secret Key",
-    )
     HOTBOX_API_URL: str = Field(
         "http://localhost:8420/api/v0",
         env="HOTBOX_API_URL",

@@ -31,6 +31,7 @@ curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gp
 apt install software-properties-common -y
 add-apt-repository ppa:deadsnakes/ppa -y
 apt install python3.10 python3.10-distutils -y
+curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 python3.10 -m pip install --upgrade pip
 python3.10 -m pip install hotbox
 

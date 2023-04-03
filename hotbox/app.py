@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+from typing import Dict
 
 import httpx
 from jinja2 import Template
@@ -134,7 +135,7 @@ class AppService:
         with open(f"{tmpdir}/{app_id}_run_app.sh", "w") as f:
             f.write(template)
 
-    def upload_app_bundle(self, app_id: str, bundle_path: str) -> str:
+    def upload_app_bundle(self, app_id: str, bundle_path: str) -> Dict:
         response = httpx.post(
             url=env.HOTBOX_API_URL + Routes.create_apps,
             files={

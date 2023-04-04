@@ -1,5 +1,6 @@
-from typer import Typer
+from typer import Typer, echo
 
+from hotbox import __version__
 from hotbox.cli import create, delete, get, server
 from hotbox.const import DESC, NAME
 
@@ -16,6 +17,13 @@ def main_callback() -> None:
 
 
 main_callback.__doc__ = NAME
+
+
+@app.command("version")
+def _version() -> None:
+    """Prints the version."""
+    echo(__version__, nl=False)
+
 
 app.add_typer(create.app)
 app.add_typer(get.app)

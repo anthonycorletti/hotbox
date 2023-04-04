@@ -57,6 +57,8 @@ def create_ec2(
 
 @app.command(
     "app",
+    help="Deploy apps.",
+    no_args_is_help=True,
 )
 def create_app(
     app_name: str = Argument(

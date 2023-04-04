@@ -8,12 +8,12 @@ from hotbox.types import Ec2Spec
 
 
 class Ec2Service:
-    def __init__(self) -> None:
-        self.aws_client = boto3.client
+    def ec2_client(self, region_name: str) -> boto3.client:
+        return boto3.client("ec2", region_name=region_name)  # pragma: no cover
 
     def get_image_id(
         self,
-        client: boto3.client,
+        ec2_client: boto3.client,
         name: str = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-arm64-*",
         virtualization_type: str = "hvm",
         architecture: str = "arm64",
@@ -27,7 +27,7 @@ class Ec2Service:
             {"Name": "root-device-type", "Values": [root_device_type]},
             {"Name": "owner-id", "Values": [owner_id]},
         ]
-        images = client.describe_images(Filters=filters)
+        images = ec2_client.describe_images(Filters=filters)
         images_sorted = sorted(
             images["Images"],
             key=lambda x: x["CreationDate"],
@@ -46,9 +46,9 @@ class Ec2Service:
             return Template(f.read()).render(firecracker_version=firecracker_version)
 
     def create(self, spec: Ec2Spec, firecracker_version: str) -> Dict:
-        ec2_client = self.aws_client("ec2", region_name=spec.region)
+        ec2_client = self.ec2_client(region_name=spec.region)
         return ec2_client.run_instances(
-            ImageId=self.get_image_id(client=ec2_client),
+            ImageId=self.get_image_id(ec2_client=ec2_client),
             KeyName=spec.key_name,
             InstanceType=spec.instance_type,
             MinCount=spec.min_count,
@@ -60,11 +60,11 @@ class Ec2Service:
         )
 
     def get(self, region: str) -> Dict:
-        ec2_client = self.aws_client("ec2", region_name=region)
+        ec2_client = self.ec2_client(region_name=region)
         return ec2_client.describe_instances()
 
     def delete(self, ids: List[str], region: str) -> Dict:
-        ec2_client = self.aws_client("ec2", region_name=region)
+        ec2_client = self.ec2_client(region_name=region)
         return ec2_client.terminate_instances(InstanceIds=ids)
 
 

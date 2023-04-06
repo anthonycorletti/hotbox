@@ -1,5 +1,5 @@
 from hotbox import __version__
 
 
-def test_version() -> None:
+async def test_version() -> None:
     assert __version__ is not None

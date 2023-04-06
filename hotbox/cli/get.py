@@ -1,9 +1,7 @@
-import json
-
+import orjson
 from typer import Option, Typer, echo
 
 from hotbox.ec2 import ec2_svc
-from hotbox.utils import json_serializer
 
 app = Typer(
     name="get",
@@ -26,9 +24,4 @@ def get_ec2(
     response = ec2_svc.get(
         region=region,
     )
-    echo(
-        json.dumps(
-            response,
-            default=json_serializer,
-        )
-    )
+    echo(orjson.dumps(response))

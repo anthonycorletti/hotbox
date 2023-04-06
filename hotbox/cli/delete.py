@@ -1,10 +1,9 @@
-import json
 from typing import List
 
+import orjson
 from typer import Argument, Option, Typer, echo
 
 from hotbox.ec2 import ec2_svc
-from hotbox.utils import json_serializer
 
 app = Typer(
     name="delete",
@@ -29,9 +28,4 @@ def delete_ec2(
     ),
 ) -> None:
     response = ec2_svc.delete(ids, region)
-    echo(
-        json.dumps(
-            response,
-            default=json_serializer,
-        )
-    )
+    echo(orjson.dumps(response))

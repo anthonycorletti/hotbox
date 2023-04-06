@@ -1,0 +1,7 @@
+{
+    "region": "us-east-1",
+    "key_name": "my-key",
+    "security_group_ids": [
+        "sg-8675309"
+    ]
+}

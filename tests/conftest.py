@@ -14,7 +14,7 @@ TEST_BASE_URL = "http://testserver:8001"
 
 @pytest.fixture(scope="function")
 def runner() -> Generator:
-    runner = CliRunner()
+    runner = CliRunner(mix_stderr=False)
     yield runner
 
 

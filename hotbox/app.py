@@ -1,9 +1,9 @@
 import json
 import os
 import shutil
-from typing import Dict
 
 import httpx
+from httpx import Response
 from jinja2 import Template
 
 from hotbox.const import (
@@ -135,7 +135,7 @@ class AppService:
         with open(f"{tmpdir}/{app_id}_run_app.sh", "w") as f:
             f.write(template)
 
-    def upload_app_bundle(self, app_id: str, bundle_path: str) -> Dict:
+    def upload_app_bundle(self, app_id: str, bundle_path: str) -> Response:
         response = httpx.post(
             url=env.HOTBOX_API_URL + Routes.create_apps,
             files={
@@ -151,11 +151,9 @@ class AppService:
                 ),
             },
         )
-        if not response.status_code == 200:
-            raise Exception(f"Failed to upload app bundle: {response.text}")
-        return response.json()
+        return response
 
-    def unzip_and_run(self, bundle_path: str, app_id: str) -> None:
+    def unzip_and_run(self, bundle_path: str, app_id: str) -> None:  # pragma: no cover
         os.system(f"tar -xzf {bundle_path}")
         os.system(f"chmod +x {app_id}_run_app.sh")
         os.system(f"./{app_id}_run_app.sh &")

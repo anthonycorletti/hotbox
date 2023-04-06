@@ -1,17 +1,12 @@
-import json
 import tempfile
 
-from typer import Argument, Exit, FileText, Option, Typer, echo
+import orjson
+from typer import Exit, FileText, Option, Typer, echo
 
 from hotbox.app import app_svc
 from hotbox.ec2 import ec2_svc
-from hotbox.types import Ec2Spec, Image
-from hotbox.utils import (
-    determine_lang,
-    generate_app_id,
-    handle_filetext,
-    json_serializer,
-)
+from hotbox.types import Ec2Spec, Image, Language
+from hotbox.utils import determine_lang, generate_app_id, handle_filetext
 
 app = Typer(
     name="create",
@@ -37,22 +32,15 @@ def create_ec2(
         "-f",
         "--file",
         allow_dash=True,
+        help="Path to the spec file. Accepts JSON strings as input too.",
     ),
 ) -> None:
-    if _filetext is None:
-        echo("Please provide a spec.")
-        raise Exit(1)
-    content = Ec2Spec(**handle_filetext(_filetext))
+    content = Ec2Spec(**handle_filetext(str(_filetext)))
     response = ec2_svc.create(
         spec=content,
         firecracker_version=firecracker_version,
     )
-    echo(
-        json.dumps(
-            response,
-            default=json_serializer,
-        )
-    )
+    echo(orjson.dumps(response))
 
 
 @app.command(
@@ -61,10 +49,6 @@ def create_ec2(
     no_args_is_help=True,
 )
 def create_app(
-    app_name: str = Argument(
-        ...,
-        help="Name of the app.",
-    ),
     app_code_path: str = Option(
         ...,
         "-c",
@@ -87,6 +71,14 @@ def create_app(
     echo("Creating app!")
     app_id = generate_app_id()
     lang = determine_lang(app_code_path=app_code_path)
+    if lang is None:
+        echo(
+            message="Unsupported application content. "
+            + "Please use a supported language: "
+            + ",".join(list(map(lambda x: x.name, Language))),
+            err=True,
+        )
+        raise Exit(1)
     build_image = getattr(Image, lang.name)
     with tempfile.TemporaryDirectory() as tmpdir:
         bundle_path = app_svc.create_app_bundle(
@@ -101,7 +93,14 @@ def create_app(
             app_id=app_id,
             bundle_path=bundle_path,
         )
-    if response is None:
-        echo("Failed to upload app bundle!")
+    if not response.is_success:
+        echo(
+            message=(
+                "Failed to upload app bundle with status code "
+                f"{response.status_code}, and message: "
+                f"{response.json().get('message')}"
+            ),
+            err=True,
+        )
         raise Exit(1)
-    echo(response.get("message"))
+    echo(orjson.dumps(response.json()))

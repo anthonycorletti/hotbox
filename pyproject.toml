@@ -23,6 +23,7 @@ dependencies = [
     "uvicorn >=0.15.0",
     "httpx >=0.21.1",
     "python-dotenv >=0.19.1",
+    "orjson >=3.6.4",
 ]
 [[project.authors]]
 name = "Anthony Corletti"

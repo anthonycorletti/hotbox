@@ -4,6 +4,8 @@ site_url: https://hotbox.corletti.xyz
 
 theme:
   name: material
+  features:
+    - navigation.instant
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
@@ -31,6 +33,7 @@ edit_uri: ""
 nav:
   - Welcome: index.md
   - Get Started: get-started.md
+  - Learn More: learn-more.md
   - Development & Contributing: contributing.md
   - Release Notes: release-notes.md
 

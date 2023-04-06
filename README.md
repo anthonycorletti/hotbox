@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://hotbox.corletti.xyz"><img src="https://github.com/anthonycorletti/hotbox/blob/main/docs/img/logo.png?raw=true" alt="hotbox"></a>
+  <a href="https://hotbox.corletti.xyz"><img src="./img/logo.png" alt="hotbox"></a>
 </p>
 <p align="center">
     <em>🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>
@@ -14,8 +14,8 @@
 <a href="https://codecov.io/gh/anthonycorletti/hotbox" target="_blank">
     <img src="https://img.shields.io/codecov/c/github/anthonycorletti/hotbox?color=%2334D058" alt="Coverage">
 </a>
-<a href="https://pypi.org/project/ddex/" target="_blank">
-    <img alt="PyPI" src="https://img.shields.io/pypi/v/ddex?color=blue">
+<a href="https://pypi.org/project/hotbox/" target="_blank">
+    <img alt="PyPI" src="https://img.shields.io/pypi/v/hotbox?color=blue">
 </a>
 </p>
 

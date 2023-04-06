@@ -1,0 +1,64 @@
+site_name: hotbox
+site_description: 🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
+site_url: https://hotbox.corletti.xyz
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: yellow
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  icon:
+    repo: fontawesome/brands/github-alt
+    logo: material/fire
+    favicon: material/fire
+
+repo_name: anthonycorletti/hotbox
+repo_url: https://github.com/anthonycorletti/hotbox
+edit_uri: ""
+
+nav:
+  - Welcome: index.md
+  - Get Started: get-started.md
+  - Development & Contributing: contributing.md
+  - Release Notes: release-notes.md
+
+markdown_extensions:
+  - toc:
+      title: On this page
+      permalink: true
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - admonition
+  - codehilite
+  - extra
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+  - pymdownx.tabbed:
+      alternate_style: true
+  - mdx_include:
+      base_path: docs
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/anthonycorletti/hotbox
+    - icon: fontawesome/solid/globe
+      link: https://hotbox.corletti.xyz

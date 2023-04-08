@@ -29,39 +29,51 @@
 
 🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
 
-## Featuring
+## 👨‍💻 Who is this for?
+
+- Developers who want to run:
+    - Apps in the cloud, but don't want to deal with the complexity of Kubernetes (which is awesome)
+    - Apps in a sandboxed environment
+    - Apps in a serverless-style environment
+    - CI environments in the cloud on their own servers
+
+## 💡 What is this for?
+
+- Learning about MicroVMs
+- Rapid prototyping
+- Running your own CI environments
+- Running Cron jobs, backend APIs, etc (_really anything you can run in a Docker container can be run in a Firecracker MicroVM, deployed with Hotbox!_)
+- Making your own serverless platform
+- Definitely not production... yet!
+
+## 🎉 Featuring
 
 Coming soon!
 
-## Requirements
+## 📝 Requirements
 
-Python 3.10+
+- Python 3.10+
+- An AWS Account
 
-## Installation
+## ⚙️ Installation
 
 ```sh
 pip install hotbox
 ```
 
-## A Quick Example
+## 🏎️ A Quick Example
 
 Coming soon!
 
-## Who is this for?
+## 🫶 How can I help?
 
-Coming soon!
+- [Star the repo ⭐️ on GitHub!](https://github.com/anthonycorletti/hotbox)
+- Open an [issue](https://github.com/anthonycorletti/hotbox/issues/new/choose) if you have a question, comment, feature request, or bug to report.
+- Open a [pull request](https://github.com/anthonycorletti/hotbox/compare) on GitHub. I'm happy to review and merge your contributions!
 
-## What is this for?
+## 📲 Contact
 
-Coming soon!
-
-## How can I help?
-
-Please open an [issue](https://github.com/anthonycorletti/hotbox/issues/new/choose) on GitHub. Pull requests are also very welcome. Checkout our [contributing guide](contributing.md) to get started.
-
-## Contact
-
-Reach out to me directly on [Twitter](https://twitter.com/anthonycorletti)!
+Reach out to Anthony directly on [Twitter](https://twitter.com/anthonycorletti) if you'd like to get in touch.
 
 &nbsp;
 

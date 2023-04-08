@@ -29,10 +29,6 @@ TAP_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 2) / 256)) $(((4 * GW_ID + 2) %
 DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:off"
 
-echo "pinging google"
-ping google.com
-echo "pinging google done 0"
-
 # set up a tap network interface for the Firecracker VM to use
 TAP_DEV="fc-$GW_ID-tap0"
 ip link del "$TAP_DEV" 2> /dev/null || true
@@ -41,27 +37,11 @@ ip addr add "${TAP_IP}${MASK_SHORT}" dev "$TAP_DEV"
 ip link set "$TAP_DEV" up
 FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
-echo "pinging google"
-ping google.com
-echo "pinging google done 1"
-
 # Enable packet forwarding for internet access
 echo 1 > /proc/sys/net/ipv4/ip_forward
-echo "pinging google"
-ping google.com
-echo "pinging google done 2"
 iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
-echo "pinging google"
-ping google.com
-echo "pinging google done 3"
 iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-echo "pinging google"
-ping google.com
-echo "pinging google done 4"
 iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
-echo "pinging google"
-ping google.com
-echo "pinging google done 5"
 
 # Download a linux kernel binary
 wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin

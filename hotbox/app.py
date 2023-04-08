@@ -154,12 +154,12 @@ class AppService:
         return response
 
     def unzip_and_run(self, bundle_path: str, app_id: str) -> None:  # pragma: no cover
-        # TODO: uncomment this
-        # os.system(f"tar -xzf {bundle_path}")
-        # os.system(f"chmod +x {app_id}_run_app.sh")
-        # os.system(f"./{app_id}_run_app.sh &")
-        # os.remove(bundle_path)
-        pass
+        os.system(f"mv {bundle_path} /root")
+        os.system(f"tar -xzf /root/{bundle_path}")
+        os.remove(f"/root/{bundle_path}")
+        os.system(f"mv /root/{app_id}* /")
+        os.system(f"chmod +x {app_id}_run_app.sh")
+        os.system(f". {app_id}_run_app.sh &")
 
 
 app_svc = AppService()

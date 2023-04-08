@@ -55,10 +55,10 @@ chmod 600 ~/hotbox-example.pem
 
 ```bash
 SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name hotbox-example --description "Security group with all traffic allowed" --vpc-id $(aws ec2 describe-vpcs | jq -r '.Vpcs[] | select(.IsDefault) | .VpcId') --region us-east-1 | jq -r '.GroupId')
-aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol all --port all --cidr 0.0.0.0/0 --region us-east-1
-aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
-aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --protocol all --port all --cidr 0.0.0.0/0 --region us-east-1
-aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
+aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --region us-east-1 --protocol all --port all --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --region us-east-1 --protocol all --port all --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --region us-east-1 --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
+aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --region us-east-1 --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
 ```
 
 ### Create the EC2 Instance
@@ -80,7 +80,7 @@ curl -s $(hotbox get ec2 --region us-east-1 | jq -r '.Reservations[] | select(.I
 Set your hotbox API URL as an environment variable:
 
 ```bash
-export HOTBOX_API_URL="http://$(hotbox get ec2 --region us-east-1 | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName')/api/v0"
+export HOTBOX_API_URL="http://$(hotbox get ec2 --region us-east-1 | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName'):8088/api/v0"
 ```
 
 Let's use our example go code. You can find the code [here](https://github.com/anthonycorletti/hotbox/blob/main/examples/go).
@@ -91,7 +91,7 @@ hotbox create app -c examples/go
 
 ## Check that your code was deployed and is running
 
-This example runs internally on the EC2 Instance, so we can check the status of the app by sshing into the EC2 Instance and curling to the app.
+This example runs internally on the EC2 Instance, so we can check the status of the app on the EC2 Instance.
 
 ```bash
 ssh -i ~/hotbox-example.pem ubuntu@$(hotbox get ec2 --region us-east-1 | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName')

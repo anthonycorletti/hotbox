@@ -61,6 +61,9 @@ SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name hotbox-example --
 
 ```bash
 aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol all --port all --cidr 0.0.0.0/0 --region us-east-1
+aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
+aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --protocol all --port all --cidr 0.0.0.0/0 --region us-east-1
+aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
 ```
 
 ### Create the EC2 Instance

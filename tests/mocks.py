@@ -51,6 +51,7 @@ class MockEc2Service:
         MaxCount: int,
         Monitoring: Dict,
         SecurityGroupIds: List[str],
+        MetadataOptions: Dict,
         BlockDeviceMappings: List[Dict],
         UserData: str,
     ) -> Dict:

@@ -127,4 +127,4 @@ async def test_create_ec2_catch_no_file(
             "v1.3.1",
         ],
     )
-    assert result.exit_code == 2
+    assert result.exit_code == 1

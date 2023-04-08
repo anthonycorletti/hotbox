@@ -40,7 +40,7 @@ apt-get install nginx -y
 rm /etc/nginx/sites-enabled/default
 cat <<EOF > /etc/nginx/sites-enabled/hotbox
 server {
-    listen 80;
+    listen 8088;
     server_name _;
     location / {
         proxy_pass http://localhost:8420;

@@ -18,7 +18,9 @@ MASK_SHORT="/30"
 # for the gateway and the tap interface. Pick the first available IP
 # address in the local link range (169.254.0.0/16).
 for GW_ID in $(seq 0 255); do
+  echo "Checking if 169.254.$((4 * GW_ID + 1)) is available"
   if ! ip addr show | grep -q "169.254.$((4 * GW_ID + 1))."; then
+    echo "Found available IP address: 169.254.$((4 * GW_ID + 1))"
     break
   fi
 done
@@ -36,7 +38,7 @@ ip link set "$TAP_DEV" up
 FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
 # Enable packet forwarding for internet access
-sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
 iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
@@ -48,8 +50,8 @@ KERNEL_IMAGE_PATH="vmlinux.bin"
 #
 # Build and run image!
 #
-docker build -t {{ app_id }} /root/{{ app_id }}_image
-CODEDIR="$(readlink -f /root/{{ app_id }}_code)"
+docker build -t {{ app_id }} /{{ app_id }}_image
+CODEDIR="$(readlink -f /{{ app_id }}_code)"
 docker run --rm --privileged --env IP=$TAP_IP$MASK_SHORT --env GATEWAY=$GW_IP -v $CODEDIR:/opt/code {{ app_id }}
 # NOTE: remove the --env vars if you don't want to set up networking
 ROOTFSDIR="$(readlink -f {{ app_id }}_fs)"

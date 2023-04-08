@@ -1,4 +1,4 @@
-Want to learn more about what all these things are?
+Want to learn more about all this stuff?
 
 Here are a few useful resources to get you started:
 

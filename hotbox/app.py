@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 
 import httpx
 from httpx import Response
@@ -154,12 +155,33 @@ class AppService:
         return response
 
     def unzip_and_run(self, bundle_path: str, app_id: str) -> None:  # pragma: no cover
-        os.system(f"mv {bundle_path} /root")
-        os.system(f"tar -xzf /root/{bundle_path}")
+        # TODO: this is a hack, need to figure out how to run this in the background
+        subprocess.run(
+            f"mv {bundle_path} /root",
+            cwd="/",
+            shell=True,
+        )
+        subprocess.run(
+            f"tar -xzf {bundle_path}",
+            cwd="/root",
+            shell=True,
+        )
         os.remove(f"/root/{bundle_path}")
-        os.system(f"mv /root/{app_id}* /")
-        os.system(f"chmod +x {app_id}_run_app.sh")
-        os.system(f". {app_id}_run_app.sh &")
+        subprocess.run(
+            f"mv {app_id}* /",
+            cwd="/root",
+            shell=True,
+        )
+        subprocess.run(
+            f"chmod +x {app_id}_run_app.sh",
+            cwd="/",
+            shell=True,
+        )
+        subprocess.run(
+            f". {app_id}_run_app.sh &",
+            cwd="/",
+            shell=True,
+        )
 
 
 app_svc = AppService()

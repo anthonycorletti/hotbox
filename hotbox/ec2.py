@@ -56,7 +56,6 @@ class Ec2Service:
             Monitoring=spec.monitoring_enabled,
             SecurityGroupIds=spec.security_group_ids,
             BlockDeviceMappings=spec.block_device_mappings,
-            MetadataOptions=spec.metadata_options,
             UserData=self._template_userdata(firecracker_version=firecracker_version),
         )
 

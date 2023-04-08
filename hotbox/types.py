@@ -49,9 +49,6 @@ class Ec2Spec(AwsSpec):
     monitoring_enabled: Dict[str, Any] = {
         "Enabled": False,
     }
-    metadata_options: Dict[str, Any] = {
-        "InstanceMetadataTags": "enabled",
-    }
     block_device_mappings: List[Dict[str, Any]] = [
         {
             "DeviceName": "/dev/xvda",

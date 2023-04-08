@@ -147,4 +147,4 @@ def create_app(
             err=True,
         )
         raise Exit(1)
-    echo(orjson.dumps(response.json()))
+    echo(response.json().get("message"))

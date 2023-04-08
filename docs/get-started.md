@@ -72,7 +72,7 @@ hotbox create ec2 --region us-east-1 --key-name hotbox-example --security-group-
 This should print `ok`. It might take a few minutes for the EC2 Instance to start up.
 
 ```bash
-curl -s $(hotbox get ec2 --region us-east-1 | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName')/api/v0/healthcheck | jq -r .message
+curl -s $(hotbox get ec2 --region us-east-1 | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName'):8088/api/v0/healthcheck | jq -r .message
 ```
 
 ## Deploy your code!

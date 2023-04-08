@@ -1,4 +1,5 @@
 import tempfile
+from typing import List
 
 import orjson
 from typer import Exit, FileText, Option, Typer, echo
@@ -27,15 +28,58 @@ def create_ec2(
         "--firecracker-version",
         help="Firecracker version.",
     ),
+    region: str = Option(
+        None,
+        "-r",
+        "--region",
+        help="AWS region.",
+    ),
+    key_name: str = Option(
+        None,
+        "-k",
+        "--key-name",
+        help="AWS key name. Should be in the region you specify.",
+    ),
+    security_group_ids: List[str] = Option(
+        None,
+        "-s",
+        "--security-group-ids",
+        help="AWS security group ids. Should be in the region you specify.",
+    ),
     _filetext: FileText = Option(
-        ...,
+        None,
         "-f",
         "--file",
         allow_dash=True,
-        help="Path to the spec file. Accepts JSON strings as input too.",
+        help="Path to the spec file. Accepts JSON strings as input too."
+        " Overrides all other options.",
     ),
 ) -> None:
-    content = Ec2Spec(**handle_filetext(str(_filetext)))
+    """Create ec2 resources.
+
+    This command creates ec2 resources. You can specify certain args directly as listed
+    below, or you can specify a spec file with the `-f` or `--file` option. If you
+    specify a spec file, all other options will be ignored.
+
+    Args:
+        firecracker_version (str, optional): Firecracker version. Defaults to "v1.3.1".
+        region (str, optional): AWS region. Defaults to "us-east-1".
+        key_name (str, optional): AWS key name. Should be in the region you specify.
+            Defaults to None.
+        security_group_ids (List[str], optional): AWS security group ids. Should be in
+            the region you specify. Defaults to None.
+        _filetext (FileText, optional): Path to the spec file. Accepts JSON strings as
+            input too. Overrides all other options. Defaults to None.
+    """
+    echo("Creating ec2!")
+    if _filetext is not None:
+        content = Ec2Spec(**handle_filetext(str(_filetext)))
+    else:
+        content = Ec2Spec(
+            region=region,
+            key_name=key_name,
+            security_group_ids=security_group_ids,
+        )
     response = ec2_svc.create(
         spec=content,
         firecracker_version=firecracker_version,

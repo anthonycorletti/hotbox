@@ -60,6 +60,6 @@ if __name__ == "__main__":
     with open("hotbox/__init__.py", "w") as f:
         for line in lines:
             if line.startswith("__version__"):
-                f.write(f'__version__ = "{new_version}"')
+                f.write(f'__version__ = "{new_version}"\n')
             else:
                 f.write(line)

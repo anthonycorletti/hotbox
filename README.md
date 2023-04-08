@@ -2,7 +2,7 @@
   <a href="https://hotbox.corletti.xyz"><img src="./img/logo.png" alt="hotbox"></a>
 </p>
 <p align="center">
-    <em>🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>
+    <em>🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>
 </p>
 <p align="center">
 <a href="https://github.com/anthonycorletti/hotbox/actions?query=workflow%3Atest" target="_blank">
@@ -27,7 +27,7 @@
 
 ---
 
-🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
+🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
 
 ## 👨‍💻 Who is this for?
 
@@ -42,7 +42,7 @@
 - Learning about MicroVMs
 - Rapid prototyping
 - Running your own CI environments
-- Running Cron jobs, backend APIs, etc (_really anything you can run in a Docker container can be run in a Firecracker MicroVM, deployed with Hotbox!_)
+- Running Cron jobs, backend APIs, etc (_really anything you can run in a Docker container can be run in a Firecracker MicroVM, deployed with hotbox!_)
 - Making your own serverless platform
 - Definitely not production... yet!
 

@@ -13,7 +13,7 @@ class Language(str, Enum):
 
 @unique
 class Image(str, Enum):
-    """Image is the name of the Docker image to use for Hotbox."""
+    """Image is the name of the Docker image to use for hotbox."""
 
     go = "golang:1.20"
     # python = "python:3.11-slim"
@@ -25,7 +25,7 @@ class Routes(str, Enum):
 
 @unique
 class Ec2MetalType(str, Enum):
-    """Ec2MetalType is the type of EC2 instance to use for Hotbox."""
+    """Ec2MetalType is the type of EC2 instance to use for hotbox."""
 
     a1_metal = "a1.metal"
     i3_metal = "i3.metal"
@@ -48,6 +48,9 @@ class Ec2Spec(AwsSpec):
     max_count: int = 1
     monitoring_enabled: Dict[str, Any] = {
         "Enabled": False,
+    }
+    metadata_options: Dict[str, Any] = {
+        "InstanceMetadataTags": "enabled",
     }
     block_device_mappings: List[Dict[str, Any]] = [
         {

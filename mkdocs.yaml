@@ -1,11 +1,12 @@
 site_name: hotbox
-site_description: 🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
+site_description: 🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
 site_url: https://hotbox.corletti.xyz
 
 theme:
   name: material
   features:
     - navigation.instant
+    - content.code.copy
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate

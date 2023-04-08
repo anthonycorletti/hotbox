@@ -1,5 +1,5 @@
 API_V0 = "/api/v0"
-DESC = "🚀 Run your apps 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️"
+DESC = "🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️"
 NAME = "hotbox"
 SERVER_MODULE_NAME = "hotbox.api:api"
 

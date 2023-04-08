@@ -8,7 +8,7 @@ class _Env(BaseSettings):
     HOTBOX_API_URL: str = Field(
         "http://localhost:8420/api/v0",
         env="HOTBOX_API_URL",
-        description="Hotbox API URL",
+        description="hotbox API URL",
     )
 
     class Config:

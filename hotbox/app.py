@@ -1,8 +1,8 @@
 import json
 import os
 import shutil
-import subprocess
 
+# import subprocess
 import httpx
 from httpx import Response
 from jinja2 import Template
@@ -156,32 +156,34 @@ class AppService:
 
     def unzip_and_run(self, bundle_path: str, app_id: str) -> None:  # pragma: no cover
         # TODO: this is a hack, need to figure out how to run this in the background
-        subprocess.run(
-            f"mv {bundle_path} /root",
-            cwd="/",
-            shell=True,
-        )
-        subprocess.run(
-            f"tar -xzf {bundle_path}",
-            cwd="/root",
-            shell=True,
-        )
-        os.remove(f"/root/{bundle_path}")
-        subprocess.run(
-            f"mv {app_id}* /",
-            cwd="/root",
-            shell=True,
-        )
-        subprocess.run(
-            f"chmod +x {app_id}_run_app.sh",
-            cwd="/",
-            shell=True,
-        )
-        subprocess.run(
-            f". {app_id}_run_app.sh &",
-            cwd="/",
-            shell=True,
-        )
+        # subprocess.run(
+        #     f"mv {bundle_path} /root",
+        #     cwd="/",
+        #     shell=True,
+        # )
+        # subprocess.run(
+        #     f"tar -xzf {bundle_path}",
+        #     cwd="/root",
+        #     shell=True,
+        # )
+        # os.remove(f"/root/{bundle_path}")
+        # subprocess.run(
+        #     f"mv {app_id}* /",
+        #     cwd="/root",
+        #     shell=True,
+        # )
+        # subprocess.run(
+        #     f"chmod +x {app_id}_run_app.sh",
+        #     cwd="/",
+        #     shell=True,
+        # )
+        # subprocess.run(
+        #     f"./{app_id}_run_app.sh &",
+        #     cwd="/",
+        #     shell=True,
+        # )
+        pass
 
 
+app_svc = AppService()
 app_svc = AppService()

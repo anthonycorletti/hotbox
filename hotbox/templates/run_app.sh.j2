@@ -3,7 +3,7 @@
 ARCH="$(uname -m)"
 
 # Stop the firecracker process if it is already running
-API_SOCKET="/fc-{{ app_id }}.socket"
+API_SOCKET="/root/fc-{{ app_id }}.socket"
 rm -f $API_SOCKET
 
 # Run firecracker
@@ -50,13 +50,13 @@ KERNEL_IMAGE_PATH="vmlinux.bin"
 #
 # Build and run image!
 #
-docker build -t {{ app_id }} /{{ app_id }}_image
-CODEDIR="$(readlink -f /{{ app_id }}_code)"
+docker build -t {{ app_id }} /root/{{ app_id }}_image
+CODEDIR="$(readlink -f /root/{{ app_id }}_code)"
 docker run --rm --privileged --env IP=$TAP_IP$MASK_SHORT --env GATEWAY=$GW_IP -v $CODEDIR:/opt/code {{ app_id }}
 # NOTE: remove the --env vars if you don't want to set up networking
 ROOTFSDIR="$(readlink -f {{ app_id }}_fs)"
 mv $CODEDIR/rootfs $ROOTFSDIR
-ROOTFS_PATH_ON_HOST="{{ app_id }}_fs"
+ROOTFS_PATH_ON_HOST="/root/{{ app_id }}_fs"
 
 # # Download a rootfs example
 # # In place of what's above, you can run this to test your setup

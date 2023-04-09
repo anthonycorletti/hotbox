@@ -7,7 +7,7 @@ API_SOCKET="/root/fc-{{ app_id }}.socket"
 rm -f $API_SOCKET
 
 # Run firecracker
-pkill -f "fc-{{ app_id }}.socket" || true
+pkill -f "${API_SOCKET}" || true
 firecracker --api-sock "${API_SOCKET}" &
 
 # set up the kernel boot args and env vars

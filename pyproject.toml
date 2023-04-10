@@ -11,7 +11,7 @@ dynamic = ["version"]
 readme = "README.md"
 license = {text = 'See LICENSE'}
 description = "hotbox"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 dependencies = [
     "boto3 >=1.20.10",
     "fastapi >=0.70.0",

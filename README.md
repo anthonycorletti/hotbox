@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://hotbox.corletti.xyz"><img src="./img/logo.png" alt="hotbox"></a>
+  <a href="https://hotbox.corletti.xyz"><img src="https://github.com/anthonycorletti/hotbox/blob/main/docs/img/logo.png?raw=true" alt="hotbox"></a>
 </p>
 <p align="center">
     <em>🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>
@@ -67,7 +67,7 @@ pip install hotbox
 
 ## 🏎️ A Quick Example
 
-👉 [Start running code on MicroVMs in the cloud!](./get-started.md) 👈
+[Start running your code on MicroVMs in the cloud here!](./get-started.md)
 
 ## 🫶 How can I help?
 

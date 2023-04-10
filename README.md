@@ -67,7 +67,7 @@ pip install hotbox
 
 ## 🏎️ A Quick Example
 
-[Start running your code on MicroVMs in the cloud here!](./get-started.md)
+👉 [Start running code on MicroVMs in the cloud!](./get-started.md) 👈
 
 ## 🫶 How can I help?
 

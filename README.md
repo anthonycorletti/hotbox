@@ -31,29 +31,33 @@
 
 ## 👨‍💻 Who is this for?
 
-- Developers who want to run:
-    - Apps in the cloud, but don't want to deal with the complexity of Kubernetes (which is awesome)
-    - Apps in a sandboxed environment
-    - Apps in a serverless-style environment
-    - CI environments in the cloud on their own servers
+- Developers that want to run:
+    - Code in the cloud and don't need or want the complexity of orchestrators like Kubernetes
+    - Code in a sand-boxed environment
+    - Code in a serverless environment
+    - CI environments on their own servers
 
 ## 💡 What is this for?
 
+- ⚠️ _Not production... yet!_
 - Learning about MicroVMs
 - Rapid prototyping
 - Running your own CI environments
-- Running Cron jobs, backend APIs, etc (_really anything you can run in a Docker container can be run in a Firecracker MicroVM, deployed with hotbox!_)
-- Making your own serverless platform
-- Definitely not production... yet!
+- Running Cron jobs, backend APIs, etc.
+- Making your own tiny serverless platform
+- ...Anything you can run in a Docker container
 
 ## 🎉 Featuring
 
-Coming soon!
+- Create EC2 instances provisioned to run Firecracker MicroVMs
+- Quickly deploy and run your code on Firecracker MicroVMs
+- Supports any runtime that can be run in a Docker container
+- Set your own CPU and memory limits
 
 ## 📝 Requirements
 
 - Python 3.10+
-- An AWS Account
+- An AWS Account. Sign up for free [here](https://aws.amazon.com/free/).
 
 ## ⚙️ Installation
 
@@ -63,18 +67,16 @@ pip install hotbox
 
 ## 🏎️ A Quick Example
 
-Coming soon!
+[Start running your code on MicroVMs in the cloud here!](./get-started.md)
 
 ## 🫶 How can I help?
 
-- [Star the repo ⭐️ on GitHub!](https://github.com/anthonycorletti/hotbox)
-- Open an [issue](https://github.com/anthonycorletti/hotbox/issues/new/choose) if you have a question, comment, feature request, or bug to report.
-- Open a [pull request](https://github.com/anthonycorletti/hotbox/compare) on GitHub. I'm happy to review and merge your contributions!
+- [⭐️ Star hotbox on GitHub! ⭐️](https://github.com/anthonycorletti/hotbox)
+- Open an [issue](https://github.com/anthonycorletti/hotbox/issues/new/choose) if you have a question, comment, feature request, or bug report.
+- Open a [pull request](https://github.com/anthonycorletti/hotbox/compare) on GitHub. Contributions are encouraged and welcome!
 
 ## 📲 Contact
 
 Reach out to Anthony directly on [Twitter](https://twitter.com/anthonycorletti) if you'd like to get in touch.
-
-&nbsp;
 
 &nbsp;

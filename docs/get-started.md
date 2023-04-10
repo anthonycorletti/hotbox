@@ -54,9 +54,8 @@ chmod 600 ~/hotbox-example.pem
 ### Create a security group
 
 ```bash
-SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name hotbox-example --description "Security group with all traffic allowed" --vpc-id $(aws ec2 describe-vpcs | jq -r '.Vpcs[] | select(.IsDefault) | .VpcId') --region us-east-1 | jq -r '.GroupId')
+SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name hotbox-example --description "All traffic allowed!" --vpc-id $(aws ec2 describe-vpcs | jq -r '.Vpcs[] | select(.IsDefault) | .VpcId') --region us-east-1 | jq -r '.GroupId')
 aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --region us-east-1 --protocol all --port all --cidr 0.0.0.0/0
-aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --region us-east-1 --protocol all --port all --cidr 0.0.0.0/0
 aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --region us-east-1 --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
 aws ec2 authorize-security-group-egress --group-id $SECURITY_GROUP_ID --region us-east-1 --ip-permissions IpProtocol=-1,Ipv6Ranges='[{CidrIpv6=::/0}]'
 ```

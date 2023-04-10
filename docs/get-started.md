@@ -100,10 +100,12 @@ ssh -i ~/hotbox-example.pem ubuntu@$(hotbox get ec2 --region us-east-1 | jq -r '
 Now that you're on the instance, run:
 
 ```bash
-curl -s localhost:8080/hotbox | jq -r .message
+curl -s http://169.254.0.1:8080/hotbox
 ```
 
 This should print `Hi there, hotbox!`.
+
+`169.254.0.1` is the IP address of the Firecracker MicroVM. Hotbox automatically set that up for you.
 
 ## Cleanup!
 

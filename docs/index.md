@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://hotbox.corletti.xyz"><img src="./img/logo.png" alt="hotbox"></a>
+  <a href="https://hotbox.corletti.xyz"><img src="https://github.com/anthonycorletti/hotbox/blob/main/docs/img/logo.png?raw=true" alt="hotbox"></a>
 </p>
 <p align="center">
     <em>🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>

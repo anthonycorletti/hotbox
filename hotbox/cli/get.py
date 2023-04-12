@@ -1,7 +1,12 @@
+from typing import Optional
+
+import httpx
 import orjson
 from typer import Option, Typer, echo
 
 from hotbox.ec2 import ec2_svc
+from hotbox.settings import env
+from hotbox.types import Routes
 
 app = Typer(
     name="get",
@@ -25,3 +30,21 @@ def get_ec2(
         region=region,
     )
     echo(orjson.dumps(response))
+
+
+@app.command(
+    "app",
+    help="Get apps.",
+)
+def get_apps(
+    app_name: Optional[str] = Option(
+        None,
+        "-n",
+        "--name",
+        help="App name.",
+    )
+) -> None:
+    response = httpx.get(
+        url=env.HOTBOX_API_URL + Routes.apps,
+    )
+    echo(orjson.dumps(response.json()))

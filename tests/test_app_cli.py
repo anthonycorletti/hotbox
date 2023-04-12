@@ -1,3 +1,4 @@
+import json
 from unittest import mock
 
 from httpx import Response
@@ -85,3 +86,10 @@ async def test_create_app_fails_unsupported_lang(
     assert result.exit_code == 1
     assert result.stdout == "Creating app!\n"
     assert result.stderr.startswith("Unsupported application content.")
+
+
+@mock.patch("httpx.get", return_value=Response(status_code=200, json={"apps": []}))
+async def test_get_apps(mock_get_response: mock.MagicMock, runner: CliRunner) -> None:
+    result = runner.invoke(app, ["get", "app"])
+    assert result.exit_code == 0
+    assert json.loads(result.stdout.strip()) == {"apps": []}

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 
 class MockEc2Service:
@@ -44,15 +44,7 @@ class MockEc2Service:
 
     def run_instances(
         self,
-        ImageId: str,
-        KeyName: str,
-        InstanceType: str,
-        MinCount: int,
-        MaxCount: int,
-        Monitoring: Dict,
-        SecurityGroupIds: List[str],
-        BlockDeviceMappings: List[Dict],
-        UserData: str,
+        **kwargs: Any,
     ) -> Dict:
         return {}
 

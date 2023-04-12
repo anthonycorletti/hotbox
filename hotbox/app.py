@@ -140,7 +140,7 @@ class AppService:
 
     def upload_app_bundle(self, app_name: str, bundle_path: str) -> Response:
         response = httpx.post(
-            url=env.HOTBOX_API_URL + Routes.create_apps,
+            url=env.HOTBOX_API_URL + Routes.apps,
             files={
                 "upload_file": (
                     os.path.basename(bundle_path),

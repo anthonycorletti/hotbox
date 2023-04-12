@@ -20,7 +20,7 @@ class Image(str, Enum):
 
 
 class Routes(str, Enum):
-    create_apps = "/apps"
+    apps = "/apps"
 
 
 @unique
@@ -40,6 +40,11 @@ class AwsSpec(HotboxSpec):
     region: str
 
 
+class Ec2InstanceTag(BaseModel):
+    Key: StrictStr
+    Value: StrictStr
+
+
 class Ec2Spec(AwsSpec):
     key_name: str
     security_group_ids: List[str]
@@ -57,6 +62,17 @@ class Ec2Spec(AwsSpec):
                 "VolumeSize": 8,
                 "VolumeType": "gp2",
             },
+        },
+    ]
+    tag_specifications: List[Dict[str, Any]] = [
+        {
+            "ResourceType": "instance",
+            "Tags": [
+                {
+                    "Key": "hotboxed",
+                    "Value": "yes",
+                },
+            ],
         },
     ]
 

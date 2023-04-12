@@ -18,8 +18,8 @@ MASK_SHORT="/30"
 # for the gateway and the tap interface. Pick the first available IP
 # address in the local link range (169.254.0.0/16).
 for GW_ID in $(seq 0 255); do
-  GW_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 1) / 256)) $(((4 * GW_ID + 1) % 256)))"
-  TAP_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 2) / 256)) $(((4 * GW_ID + 2) % 256)))"
+  GW_IP="$(printf '169.254.%s.%s' $(((2 * GW_ID + 1) / 256)) $(((2 * GW_ID + 1) % 256)))"
+  TAP_IP="$(printf '169.254.%s.%s' $(((2 * GW_ID + 2) / 256)) $(((2 * GW_ID + 2) % 256)))"
   if ! ip addr show | grep -q $TAP_IP; then
     break
   fi

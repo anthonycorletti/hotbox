@@ -85,7 +85,7 @@ export HOTBOX_API_URL="http://$(hotbox get ec2 --region us-east-1 | jq -r '.Rese
 Let's use our example go code. You can find the code [here](https://github.com/anthonycorletti/hotbox/blob/main/examples/go).
 
 ```bash
-hotbox create app -c examples/go
+hotbox create app -n my-app -c examples/go
 ```
 
 ## Check that your code was deployed and is running

@@ -2,6 +2,8 @@ import json
 import os
 import shutil
 import subprocess
+from glob import glob
+from typing import Optional
 
 import httpx
 from httpx import Response
@@ -13,7 +15,7 @@ from hotbox.const import (
     DEFAULT_RUN_APP_TEMPLATE_FILEPATH,
 )
 from hotbox.settings import env
-from hotbox.types import Image, Routes
+from hotbox.types import GetAppsResponse, Image, Routes
 
 
 class AppService:
@@ -22,15 +24,15 @@ class AppService:
 
     def create_app_bundle(
         self,
-        app_id: str,
+        app_name: str,
         app_code_path: str,
         build_image: Image,
         vcpu_count: int,
         mem_size_mib: int,
         tmpdir: str,
     ) -> str:
-        _image_dir = f"{tmpdir}/{app_id}_image"
-        _code_dir = f"{tmpdir}/{app_id}_code"
+        _image_dir = f"{tmpdir}/{app_name}_image"
+        _code_dir = f"{tmpdir}/{app_name}_code"
         os.makedirs(_image_dir, exist_ok=True)
         os.makedirs(_code_dir, exist_ok=True)
         shutil.copytree(
@@ -48,13 +50,13 @@ class AppService:
             image_dir=_image_dir,
         )
         self._create_run_app(
-            app_id=app_id,
+            app_name=app_name,
             vcpu_count=vcpu_count,
             mem_size_mib=mem_size_mib,
             tmpdir=tmpdir,
         )
         # tar up the bundle
-        bundle_path = f"{tmpdir}/{app_id}"
+        bundle_path = f"{tmpdir}/{app_name}"
         shutil.make_archive(
             base_name=bundle_path,
             format="gztar",
@@ -125,18 +127,18 @@ class AppService:
             return f.read().strip()
 
     def _create_run_app(
-        self, app_id: str, vcpu_count: int, mem_size_mib: int, tmpdir: str
+        self, app_name: str, vcpu_count: int, mem_size_mib: int, tmpdir: str
     ) -> None:
         with open(DEFAULT_RUN_APP_TEMPLATE_FILEPATH) as f:
             template = Template(f.read()).render(
-                app_id=app_id,
+                app_name=app_name,
                 vcpu_count=vcpu_count,
                 mem_size_mib=mem_size_mib,
             )
-        with open(f"{tmpdir}/{app_id}_run_app.sh", "w") as f:
+        with open(f"{tmpdir}/{app_name}_run_app.sh", "w") as f:
             f.write(template)
 
-    def upload_app_bundle(self, app_id: str, bundle_path: str) -> Response:
+    def upload_app_bundle(self, app_name: str, bundle_path: str) -> Response:
         response = httpx.post(
             url=env.HOTBOX_API_URL + Routes.create_apps,
             files={
@@ -147,26 +149,40 @@ class AppService:
                 ),
                 "create_app_request": (
                     None,
-                    json.dumps({"app_id": app_id}),
+                    json.dumps({"app_name": app_name}),
                     "application/json",
                 ),
             },
         )
         return response
 
-    def unzip_and_run(self, bundle_path: str, app_id: str) -> None:  # pragma: no cover
+    def unzip_and_run(
+        self, bundle_path: str, app_name: str
+    ) -> None:  # pragma: no cover
         subprocess.run(
             f"tar -xzf {bundle_path}",
             shell=True,
         )
         subprocess.run(
-            f"chmod +x {app_id}_run_app.sh",
+            f"chmod +x {app_name}_run_app.sh",
             shell=True,
         )
         subprocess.run(
-            f"./{app_id}_run_app.sh &",
+            f"./{app_name}_run_app.sh &",
             shell=True,
         )
+
+    def get_apps(self, name: Optional[str] = None) -> GetAppsResponse:
+        _glob = "fc-*-config.json"
+        if name is not None:
+            _glob = f"fc-{name}-config.json"
+        _files = glob(_glob)
+        _apps = {}
+        for _file in _files:
+            with open(_file) as f:
+                _app_name = "-".join(_file.split("-")[1:-1])
+                _apps[_app_name] = json.load(f)
+        return GetAppsResponse(apps=_apps)
 
 
 app_svc = AppService()

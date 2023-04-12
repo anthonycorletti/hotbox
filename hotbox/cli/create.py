@@ -7,7 +7,7 @@ from typer import Exit, FileText, Option, Typer, echo
 from hotbox.app import app_svc
 from hotbox.ec2 import ec2_svc
 from hotbox.types import Ec2Spec, Image, Language
-from hotbox.utils import determine_lang, generate_app_id, handle_filetext
+from hotbox.utils import determine_lang, handle_filetext
 
 app = Typer(
     name="create",
@@ -93,6 +93,12 @@ def create_ec2(
     no_args_is_help=True,
 )
 def create_app(
+    app_name: str = Option(
+        ...,
+        "-n",
+        "--name",
+        help="Name of the app.",
+    ),
     app_code_path: str = Option(
         ...,
         "-c",
@@ -113,7 +119,6 @@ def create_app(
     ),
 ) -> None:
     echo("Creating app!")
-    app_id = generate_app_id()
     lang = determine_lang(app_code_path=app_code_path)
     if lang is None:
         echo(
@@ -126,7 +131,7 @@ def create_app(
     build_image = getattr(Image, lang.name)
     with tempfile.TemporaryDirectory() as tmpdir:
         bundle_path = app_svc.create_app_bundle(
-            app_id=app_id,
+            app_name=app_name,
             app_code_path=app_code_path,
             build_image=build_image,
             vcpu_count=vcpu_count,
@@ -134,7 +139,7 @@ def create_app(
             tmpdir=tmpdir,
         )
         response = app_svc.upload_app_bundle(
-            app_id=app_id,
+            app_name=app_name,
             bundle_path=bundle_path,
         )
     if not response.is_success:

@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-import uuid
 from typing import Dict, Optional
 
 from hotbox.types import Language
@@ -16,10 +15,6 @@ def handle_filetext(filetext: str) -> Dict:
     else:
         content = filetext.encode("utf-8")
     return json.loads(content)
-
-
-def generate_app_id() -> str:
-    return f"app-{uuid.uuid4().hex}"
 
 
 def determine_lang(app_code_path: str) -> Optional[Language]:

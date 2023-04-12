@@ -1,4 +1,5 @@
 import os
+from typing import AsyncGenerator
 from unittest import mock
 
 from httpx import AsyncClient
@@ -35,10 +36,37 @@ async def test_create_app(
             ),
             "create_app_request": (
                 None,
-                b'{"app_id": "test"}',
+                b'{"app_name": "test"}',
                 "application/json",
             ),
         },
     )
     assert response.status_code == 200
     assert response.json()["message"] == "App running in the cloud!"
+    os.remove("test.tar.gz")
+
+
+async def test_get_apps_empty(client: AsyncClient) -> None:
+    response = await client.get(f"{API_V0}/apps")
+    assert response.status_code == 200
+    assert response.json() == {"apps": {}}
+
+
+async def test_get_apps_many(
+    client: AsyncClient, create_test_fc_config_files: AsyncGenerator
+) -> None:
+    response = await client.get(f"{API_V0}/apps")
+    data = response.json()
+    assert response.status_code == 200
+    assert len(data["apps"]) == 2
+    assert set(data["apps"].keys()) == {"ui", "api"}
+
+
+async def test_get_apps_on(
+    client: AsyncClient, create_test_fc_config_files: AsyncGenerator
+) -> None:
+    response = await client.get(f"{API_V0}/apps?name=ui")
+    data = response.json()
+    assert response.status_code == 200
+    assert len(data["apps"]) == 1
+    assert set(data["apps"].keys()) == {"ui"}

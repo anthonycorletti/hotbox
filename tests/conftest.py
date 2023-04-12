@@ -1,4 +1,5 @@
 import asyncio
+import os
 from typing import AsyncGenerator, Generator
 
 import pytest
@@ -32,3 +33,14 @@ def event_loop(request: Request) -> Generator:
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture(scope="function")
+async def create_test_fc_config_files() -> AsyncGenerator:
+    with open("fc-ui-config.json", "w") as f:
+        f.write("{}")
+    with open("fc-api-config.json", "w") as f:
+        f.write("{}")
+    yield
+    os.remove("fc-ui-config.json")
+    os.remove("fc-api-config.json")

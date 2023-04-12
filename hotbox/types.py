@@ -68,4 +68,8 @@ class HealthcheckResponse(BaseModel):
 
 
 class CreateAppRequest(BaseModel):
-    app_id: StrictStr
+    app_name: StrictStr
+
+
+class GetAppsResponse(BaseModel):
+    apps: Dict[str, Dict] = dict()

@@ -3,7 +3,7 @@
 ARCH="$(uname -m)"
 
 # Stop the firecracker process if it is already running
-API_SOCKET="/root/fc-{{ app_id }}.socket"
+API_SOCKET="/root/fc-{{ app_name }}.socket"
 rm -f $API_SOCKET
 
 # Run firecracker
@@ -50,13 +50,13 @@ KERNEL_IMAGE_PATH="vmlinux.bin"
 #
 # Build and run image!
 #
-docker build -t {{ app_id }} /root/{{ app_id }}_image
-CODEDIR="$(readlink -f /root/{{ app_id }}_code)"
-docker run --rm --privileged --env IP=$TAP_IP$MASK_SHORT --env GATEWAY=$GW_IP -v $CODEDIR:/opt/code {{ app_id }}
+docker build -t {{ app_name }} /root/{{ app_name }}_image
+CODEDIR="$(readlink -f /root/{{ app_name }}_code)"
+docker run --rm --privileged --env IP=$TAP_IP$MASK_SHORT --env GATEWAY=$GW_IP -v $CODEDIR:/opt/code {{ app_name }}
 # NOTE: remove the --env vars if you don't want to set up networking
-ROOTFSDIR="$(readlink -f {{ app_id }}_fs)"
+ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $CODEDIR/rootfs $ROOTFSDIR
-ROOTFS_PATH_ON_HOST="/root/{{ app_id }}_fs"
+ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"
 
 # # Download a rootfs example
 # # In place of what's above, you can run this to test your setup
@@ -71,7 +71,7 @@ ROOTFS_PATH_ON_HOST="/root/{{ app_id }}_fs"
 # ssh -o StrictHostKeyChecking=false -i ubuntu-18.04.id_rsa root@169.254.0.21
 
 # make a configuration file
-cat <<EOF > fc-{{ app_id }}-config.json
+cat <<EOF > fc-{{ app_name }}-config.json
 {
   "boot-source": {
     "kernel_image_path": "$KERNEL_IMAGE_PATH",
@@ -100,4 +100,4 @@ cat <<EOF > fc-{{ app_id }}-config.json
 EOF
 
 # start firecracker
-firecracker --no-api --config-file fc-{{ app_id }}-config.json
+firecracker --no-api --config-file fc-{{ app_name }}-config.json

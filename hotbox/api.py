@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
@@ -8,7 +9,7 @@ from pydantic import Json
 from hotbox import __version__
 from hotbox.app import app_svc
 from hotbox.const import API_V0, DESC, NAME
-from hotbox.types import CreateAppRequest, HealthcheckResponse
+from hotbox.types import CreateAppRequest, GetAppsResponse, HealthcheckResponse
 
 os.environ["TZ"] = "UTC"
 
@@ -51,18 +52,26 @@ async def create_app(
     upload_file: UploadFile = File(...),
 ) -> JSONResponse:
     _create_app_request = CreateAppRequest(**create_app_request)
-    bundle_path = f"{_create_app_request.app_id}.tar.gz"
+    bundle_path = f"{_create_app_request.app_name}.tar.gz"
     with open(bundle_path, "wb") as buffer:
         buffer.write(upload_file.file.read())
     background_tasks.add_task(
         app_svc.unzip_and_run,
         bundle_path,
-        _create_app_request.app_id,
+        _create_app_request.app_name,
     )
     return JSONResponse(
         status_code=200,
         content={"message": "App running in the cloud!"},
     )
+
+
+@app_router.get(
+    "/apps",
+    response_model=GetAppsResponse,
+)
+async def get_apps(name: Optional[str] = None) -> GetAppsResponse:
+    return app_svc.get_apps(name=name)
 
 
 api.include_router(health_router)

@@ -22,6 +22,8 @@ async def test_create_app_success(
         [
             "create",
             "app",
+            "-n",
+            "test-app",
             "-c",
             "tests/assets/code/go",
         ],
@@ -45,6 +47,8 @@ async def test_create_app_fails(
         [
             "create",
             "app",
+            "-n",
+            "test-app",
             "-c",
             "tests/assets/code/go",
         ],
@@ -72,6 +76,8 @@ async def test_create_app_fails_unsupported_lang(
         [
             "create",
             "app",
+            "-n",
+            "test-app",
             "-c",
             "tests/assets/code/hoon",
         ],

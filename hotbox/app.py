@@ -192,7 +192,10 @@ class AppService:
         return response
 
     def delete(self, app_names: List[str]) -> List[str]:
-        for app_name in app_names:
+        get_apps_res = self.get_apps()
+        apps = get_apps_res.apps
+        for app_name in set(app_names) & set(apps.keys()):
+            app_content = apps[app_name]
             _files = glob(f"{app_name}*") + glob(f"fc-{app_name}*")
             for _file in _files:
                 if os.path.isdir(_file):
@@ -206,6 +209,10 @@ class AppService:
             )
             subprocess.run(
                 f"pkill -f fc-{app_name}",
+                shell=True,
+            )
+            subprocess.run(
+                f"ip link del {app_content['network-interfaces']['host_dev_name']}",
                 shell=True,
             )
 

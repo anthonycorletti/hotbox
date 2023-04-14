@@ -42,7 +42,7 @@ async def create_test_fc_config_files() -> AsyncGenerator:
     app_names = ["api", "ui"]
     for app_name in app_names:
         with open(f"fc-{app_name}-config.json", "w") as f:
-            f.write("{}")
+            f.write('{ "network-interfaces": { "host_dev_name": "test" } }')
         with open(f"{app_name}.tar.gz", "w") as f:
             f.write("test")
         with open(f"{app_name}_fs", "w") as f:

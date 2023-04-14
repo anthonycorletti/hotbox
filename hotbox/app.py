@@ -202,12 +202,18 @@ class AppService:
                     shutil.rmtree(_file)
                 else:
                     os.remove(_file)
+            network_interfaces = app_content["network-interfaces"]
+            # get the network interface with eth0 iface_id
+            for iface in network_interfaces:
+                if iface["iface_id"] == "eth0":
+                    eth0_iface = iface
+                    break
             subprocess.run(
                 f"pkill -f fc-{app_name}",
                 shell=True,
             )
             subprocess.run(
-                f"ip link del {app_content['network-interfaces']['host_dev_name']}",
+                f"ip link del {eth0_iface['host_dev_name']}",
                 shell=True,
             )
 

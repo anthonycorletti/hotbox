@@ -1,15 +1,20 @@
 import os
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
-from fastapi import APIRouter, BackgroundTasks, FastAPI, File, Form, UploadFile
+from fastapi import APIRouter, BackgroundTasks, FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import Json
 
 from hotbox import __version__
 from hotbox.app import app_svc
 from hotbox.const import API_V0, DESC, NAME
-from hotbox.types import CreateAppRequest, GetAppsResponse, HealthcheckResponse
+from hotbox.types import (
+    CreateAppRequest,
+    DeleteAppsResponse,
+    GetAppsResponse,
+    HealthcheckResponse,
+)
 
 os.environ["TZ"] = "UTC"
 
@@ -72,6 +77,17 @@ async def create_app(
 )
 async def get_apps(name: Optional[str] = None) -> GetAppsResponse:
     return app_svc.get_apps(name=name)
+
+
+@app_router.delete(
+    "/apps",
+    response_model=DeleteAppsResponse,
+)
+async def delete_apps(
+    bgt: BackgroundTasks, app_names: List[str] = Query(None)
+) -> DeleteAppsResponse:
+    bgt.add_task(app_svc.delete, app_names=app_names)
+    return DeleteAppsResponse(deleted_apps=app_names)
 
 
 api.include_router(health_router)

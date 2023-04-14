@@ -43,7 +43,6 @@ async def test_create_app(
     )
     assert response.status_code == 200
     assert response.json()["message"] == "App running in the cloud!"
-    os.remove("test.tar.gz")
 
 
 async def test_get_apps_empty(client: AsyncClient) -> None:
@@ -70,3 +69,17 @@ async def test_get_apps_on(
     assert response.status_code == 200
     assert len(data["apps"]) == 1
     assert set(data["apps"].keys()) == {"ui"}
+
+
+async def test_delete_apps(
+    client: AsyncClient, create_test_fc_config_files: AsyncGenerator
+) -> None:
+    response = await client.delete(f"{API_V0}/apps", params={"app_names": ["ui"]})
+    assert response.status_code == 200
+    assert response.json()["deleted_apps"] == ["ui"]
+    response = await client.get(f"{API_V0}/apps")
+    data = response.json()
+    print(data)
+    assert response.status_code == 200
+    assert len(data["apps"]) == 1
+    assert set(data["apps"].keys()) == {"api"}

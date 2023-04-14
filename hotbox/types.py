@@ -89,3 +89,7 @@ class CreateAppRequest(BaseModel):
 
 class GetAppsResponse(BaseModel):
     apps: Dict[str, Dict] = dict()
+
+
+class DeleteAppsResponse(BaseModel):
+    deleted_apps: List[str] = list()

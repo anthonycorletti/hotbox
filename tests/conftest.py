@@ -1,5 +1,7 @@
 import asyncio
+import contextlib
 import os
+import shutil
 from typing import AsyncGenerator, Generator
 
 import pytest
@@ -37,10 +39,28 @@ def event_loop(request: Request) -> Generator:
 
 @pytest.fixture(scope="function")
 async def create_test_fc_config_files() -> AsyncGenerator:
-    with open("fc-ui-config.json", "w") as f:
-        f.write("{}")
-    with open("fc-api-config.json", "w") as f:
-        f.write("{}")
+    app_names = ["api", "ui"]
+    for app_name in app_names:
+        with open(f"fc-{app_name}-config.json", "w") as f:
+            f.write("{}")
+        with open(f"{app_name}.tar.gz", "w") as f:
+            f.write("test")
+        with open(f"{app_name}_fs", "w") as f:
+            f.write("test")
+        with open(f"{app_name}_run_app.sh", "w") as f:
+            f.write("test")
+        os.makedirs(f"{app_name}_code", exist_ok=True)
+        with open(f"{app_name}_code/test.go", "w") as f:
+            f.write("test")
+        os.makedirs(f"{app_name}_image", exist_ok=True)
+        with open(f"{app_name}_image/Dockerfile", "w") as f:
+            f.write("test")
     yield
-    os.remove("fc-ui-config.json")
-    os.remove("fc-api-config.json")
+    for app_name in app_names:
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(f"fc-{app_name}-config.json")
+            os.remove(f"{app_name}.tar.gz")
+            os.remove(f"{app_name}_fs")
+            os.remove(f"{app_name}_run_app.sh")
+        shutil.rmtree(f"{app_name}_code", ignore_errors=True)
+        shutil.rmtree(f"{app_name}_image", ignore_errors=True)

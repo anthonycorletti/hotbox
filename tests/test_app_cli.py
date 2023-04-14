@@ -93,3 +93,15 @@ async def test_get_apps(mock_get_response: mock.MagicMock, runner: CliRunner) ->
     result = runner.invoke(app, ["get", "app"])
     assert result.exit_code == 0
     assert json.loads(result.stdout.strip()) == {"apps": []}
+
+
+@mock.patch(
+    "httpx.delete",
+    return_value=Response(status_code=200, json={"deleted_apps": ["my-app"]}),
+)
+async def test_delete_apps(
+    mock_delete_response: mock.MagicMock, runner: CliRunner
+) -> None:
+    result = runner.invoke(app, ["delete", "app", "my-app"])
+    assert result.exit_code == 0
+    assert result.stdout == "Deleting apps: my-app\n"

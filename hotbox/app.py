@@ -3,7 +3,7 @@ import os
 import shutil
 import subprocess
 from glob import glob
-from typing import Optional
+from typing import List, Optional
 
 import httpx
 from httpx import Response
@@ -183,6 +183,23 @@ class AppService:
                 _app_name = "-".join(_file.split("-")[1:-1])
                 _apps[_app_name] = json.load(f)
         return GetAppsResponse(apps=_apps)
+
+    def make_delete_request(self, app_names: List[str]) -> Response:
+        response = httpx.delete(
+            url=env.HOTBOX_API_URL + Routes.apps,
+            params={"app_names": app_names},
+        )
+        return response
+
+    def delete(self, app_names: List[str]) -> List[str]:
+        for app_name in app_names:
+            _files = glob(f"{app_name}*") + glob(f"fc-{app_name}*")
+            for _file in _files:
+                if os.path.isdir(_file):
+                    shutil.rmtree(_file)
+                else:
+                    os.remove(_file)
+        return app_names
 
 
 app_svc = AppService()

@@ -43,6 +43,7 @@ async def test_create_app(
     )
     assert response.status_code == 200
     assert response.json()["message"] == "App running in the cloud!"
+    os.remove("test.tar.gz")
 
 
 async def test_get_apps_empty(client: AsyncClient) -> None:

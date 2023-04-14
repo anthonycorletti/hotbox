@@ -199,6 +199,16 @@ class AppService:
                     shutil.rmtree(_file)
                 else:
                     os.remove(_file)
+            api_socket = f"/root/fc-{app_name}.socket"
+            subprocess.run(
+                f"rm -f {api_socket}",
+                shell=True,
+            )
+            subprocess.run(
+                f"pkill -f fc-{app_name}",
+                shell=True,
+            )
+
         return app_names
 
 

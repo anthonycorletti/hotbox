@@ -2,7 +2,7 @@
 
 set -ex
 
-dd if=/dev/zero of=/tmp/rootfs bs=1M count=50
+dd if=/dev/zero of=/tmp/rootfs bs=1M count={{ fs_size_mib }}
 mkfs.ext4 /tmp/rootfs
 
 mkdir /tmp/tmp

@@ -29,6 +29,7 @@ class AppService:
         build_image: Image,
         vcpu_count: int,
         mem_size_mib: int,
+        fs_size_mib: int,
         tmpdir: str,
     ) -> str:
         _image_dir = f"{tmpdir}/{app_name}_image"
@@ -48,6 +49,7 @@ class AppService:
         self._create_image(
             image=build_image,
             image_dir=_image_dir,
+            fs_size_mib=fs_size_mib,
         )
         self._create_run_app(
             app_name=app_name,
@@ -64,7 +66,7 @@ class AppService:
         )
         return f"{bundle_path}.tar.gz"
 
-    def _create_image(self, image: Image, image_dir: str) -> None:
+    def _create_image(self, image: Image, image_dir: str, fs_size_mib: int) -> None:
         self._create_dockerfile(
             image_dir=image_dir,
             image=image,
@@ -72,6 +74,7 @@ class AppService:
         self._create_entrypoint(
             image_dir=image_dir,
             image=image,
+            fs_size_mib=fs_size_mib,
         )
         self._create_start_script(
             image_dir=image_dir,
@@ -91,13 +94,16 @@ class AppService:
             f.write(template)
         os.remove(f"{image_dir}/Dockerfile.j2")
 
-    def _create_entrypoint(self, image_dir: str, image: Image) -> None:
+    def _create_entrypoint(
+        self, image_dir: str, fs_size_mib: int, image: Image
+    ) -> None:
         _install = self._get_install_steps(image=image)
         _build = self._get_build_steps(image=image)
         with open(f"{image_dir}/entrypoint.j2") as f:
             template = Template(f.read()).render(
                 install=_install,
                 build=_build,
+                fs_size_mib=fs_size_mib,
             )
         with open(f"{image_dir}/entrypoint", "w") as f:
             f.write(template)

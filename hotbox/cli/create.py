@@ -117,6 +117,12 @@ def create_app(
         "--mem-size-mib",
         help="Memory size in MiB.",
     ),
+    fs_size_mib: int = Option(
+        50,
+        "-s",
+        "--fs-size-mib",
+        help="Size of the rootfs in MiB.",
+    ),
 ) -> None:
     echo("Creating app!")
     lang = determine_lang(app_code_path=app_code_path)
@@ -137,6 +143,7 @@ def create_app(
             vcpu_count=vcpu_count,
             mem_size_mib=mem_size_mib,
             tmpdir=tmpdir,
+            fs_size_mib=fs_size_mib,
         )
         response = app_svc.upload_app_bundle(
             app_name=app_name,

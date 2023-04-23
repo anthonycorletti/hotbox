@@ -305,6 +305,7 @@ def update_version_number_from_commit_message(ctx: Context) -> None:
         bumpversion: <major|minor|micro>
 
     """
+    print("here!")
     commit_msg = subprocess.check_output(
         ["git", "log", "--format=%B", "-n", "1", "HEAD"]
     ).decode("utf-8")

@@ -4,9 +4,9 @@ import httpx
 import orjson
 from typer import Option, Typer, echo
 
+from hotbox._types import Routes
 from hotbox.ec2 import ec2_svc
 from hotbox.settings import env
-from hotbox.types import Routes
 
 app = Typer(
     name="get",

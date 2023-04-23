@@ -30,11 +30,17 @@ jobs:
           cache: "pip"
           cache-dependency-path: "pyproject.toml"
 
-      - name: install dependencies
-        run: ./scripts/install.sh
+      - name: install invoke
+        run: pip install invoke
 
-      - name: run tests
-        run: ./scripts/test.sh
+      - name: install
+        run: inv install
+
+      - name: lint
+        run: inv lint
+
+      - name: test
+        run: inv test
 
       - name: upload coverage
         if: github.ref == 'refs/heads/main'

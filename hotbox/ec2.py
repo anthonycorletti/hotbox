@@ -3,8 +3,8 @@ from typing import Dict, List, Optional
 import boto3
 from jinja2 import Template
 
+from hotbox._types import Ec2Spec
 from hotbox.const import DEFAULT_USERDATA_TEMPLATE_FILEPATH
-from hotbox.types import Ec2Spec
 
 
 class Ec2Service:

@@ -28,11 +28,14 @@ jobs:
           cache: "pip"
           cache-dependency-path: "pyproject.toml"
 
+      - name: install invoke
+        run: pip install invoke
+
       - name: build
-        run: ./scripts/build.sh
+        run: inv build
 
       - name: publish
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-        run: ./scripts/publish.sh
+        run: inv publish

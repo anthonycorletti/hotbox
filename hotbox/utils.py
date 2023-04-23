@@ -3,7 +3,7 @@ import os
 import sys
 from typing import Dict, Optional
 
-from hotbox.types import Language
+from hotbox._types import Language
 
 
 def handle_filetext(filetext: str) -> Dict:

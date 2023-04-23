@@ -4,9 +4,9 @@ from typing import List
 import orjson
 from typer import Exit, FileText, Option, Typer, echo
 
+from hotbox._types import Ec2Spec, Image, Language
 from hotbox.app import app_svc
 from hotbox.ec2 import ec2_svc
-from hotbox.types import Ec2Spec, Image, Language
 from hotbox.utils import determine_lang, handle_filetext
 
 app = Typer(

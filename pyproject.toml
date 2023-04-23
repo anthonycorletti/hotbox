@@ -33,12 +33,6 @@ email = "anthcor@gmail.com"
 hotbox = "hotbox.cli.main:app"
 
 [project.optional-dependencies]
-test = [
-    "pytest >=6.2.5",
-    "pytest-asyncio >=0.20.3",
-    "coverage >=6.1.1",
-    "pytest-cov >=3.0.0",
-]
 dev = [
     "mypy <1.1.1", # https://github.com/pydantic/pydantic/issues/5190
     "black >=21.10b0",
@@ -47,6 +41,12 @@ dev = [
     "mkdocs >=1.4.2",
     "mdx-include >=1.4.2",
     "mkdocs-material >=9.1.5",
+    "invoke >=1.6.0",
+    "packaging >=21.0",
+    "pytest >=6.2.5",
+    "pytest-asyncio >=0.20.3",
+    "coverage >=6.1.1",
+    "pytest-cov >=3.0.0",
 ]
 
 [project.urls]
@@ -56,9 +56,10 @@ Documentation = "https://github.com/anthonycorletti/hotbox"
 version = {attr = "hotbox.__version__"}
 
 [tool.ruff]
-select = ["E", "F", "I"]
-ignore = ["D10"]
 line-length = 88
+ignore = ["D10"]
+include = ["*.py"]
+select = ["E", "F", "I"]
 target-version = "py310"
 extend-ignore = [
     "D203",
@@ -73,4 +74,38 @@ extend-ignore = [
     "D409",
     "D413",
     "D415",
+]
+
+[tool.black]
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.*_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | __pycache__
+)/
+'''
+
+[tool.mypy]
+ignore_missing_imports = true
+disallow_untyped_defs = true
+mypy_path = ["hotbox", "tests"]
+exclude = ["dist", "build", ".venv"]
+
+[tool.coverage.run]
+source = ["hotbox", "tests"]
+omit = ["*__init__.py"]
+parallel = true
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError'
 ]

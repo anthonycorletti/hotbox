@@ -1,9 +1,0 @@
-[run]
-source =
-    hotbox
-    tests
-
-omit =
-    *__init__.py
-
-parallel = True

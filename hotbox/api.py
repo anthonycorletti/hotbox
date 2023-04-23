@@ -7,14 +7,14 @@ from fastapi.responses import JSONResponse
 from pydantic import Json
 
 from hotbox import __version__
-from hotbox.app import app_svc
-from hotbox.const import API_V0, DESC, NAME
-from hotbox.types import (
+from hotbox._types import (
     CreateAppRequest,
     DeleteAppsResponse,
     GetAppsResponse,
     HealthcheckResponse,
 )
+from hotbox.app import app_svc
+from hotbox.const import API_V0, DESC, NAME
 
 os.environ["TZ"] = "UTC"
 

@@ -9,13 +9,13 @@ import httpx
 from httpx import Response
 from jinja2 import Template
 
+from hotbox._types import GetAppsResponse, Image, Routes
 from hotbox.const import (
     DEFAULT_IMAGE_TEMPLATE_DIR,
     DEFAULT_LANG_TEMPLATE_DIR,
     DEFAULT_RUN_APP_TEMPLATE_FILEPATH,
 )
 from hotbox.settings import env
-from hotbox.types import GetAppsResponse, Image, Routes
 
 
 class AppService:

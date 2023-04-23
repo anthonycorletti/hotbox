@@ -309,20 +309,20 @@ def update_version_number_from_commit_message(ctx: Context) -> None:
         ["git", "log", "--format=%B", "-n", "1", "HEAD"]
     ).decode("utf-8")
     print(f"Commit message: {commit_msg}")
-    if commit_msg == "bumpversion":
-        update_version_number(ctx, BumpType.MICRO)
-        return
-    elif commit_msg.startswith("bumpversion: "):
-        bump_type = commit_msg.split(": ")[1].strip()
-        if bump_type == "major":
-            update_version_number(ctx, BumpType.MAJOR)
-            return
-        elif bump_type == "minor":
-            update_version_number(ctx, BumpType.MINOR)
-            return
-        elif bump_type == "micro":
-            update_version_number(ctx, BumpType.MICRO)
-            return
-    else:
-        print(f"Commit message does not start with 'bumpversion:' - {commit_msg}")
-        return
+    # if commit_msg == "bumpversion":
+    #     update_version_number(ctx, BumpType.MICRO)
+    #     return
+    # elif commit_msg.startswith("bumpversion: "):
+    #     bump_type = commit_msg.split(": ")[1].strip()
+    #     if bump_type == "major":
+    #         update_version_number(ctx, BumpType.MAJOR)
+    #         return
+    #     elif bump_type == "minor":
+    #         update_version_number(ctx, BumpType.MINOR)
+    #         return
+    #     elif bump_type == "micro":
+    #         update_version_number(ctx, BumpType.MICRO)
+    #         return
+    # else:
+    #     print(f"Commit message does not start with 'bumpversion:' - {commit_msg}")
+    #     return

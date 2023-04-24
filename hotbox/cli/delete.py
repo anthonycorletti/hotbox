@@ -44,4 +44,4 @@ def delete_app(
     ),
 ) -> None:
     response = app_svc.make_delete_request(app_names=app_names)
-    echo(f"Deleting apps: {','.join(response.json()['deleted_apps'])}")
+    echo(f"Deleting apps: {', '.join(response.json()['deleted_apps'])}")

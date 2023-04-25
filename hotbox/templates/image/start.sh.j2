@@ -3,7 +3,7 @@ rc-service sysfs start
 rc-service networking start
 
 # set up network interface
-ifconfig $HB_IF up && ip addr add dev $HB_IF $HB_TAP_MASK
+ifconfig eth0 up && ip addr add dev eth0 $HB_TAP_MASK
 ip route add default via $HB_GATEWAY
 
 # run the code in the microvm

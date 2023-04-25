@@ -3,8 +3,8 @@ rc-service sysfs start
 rc-service networking start
 
 # set up network interface
-ifconfig eth0 up && ip addr add dev eth0 HB_START_SH_TAP_IP_MASK_SHORT
-ip route add default via HB_START_SH_GATEWAY_IP
+ifconfig eth0 up && ip addr add dev eth0 $HB_TAP_MASK
+ip route add default via $HB_GATEWAY
 
 # run the code in the microvm
 # the firecracker compiler will place the code here

@@ -28,6 +28,10 @@ done
 DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:off"
 
+# replace TAP_IP_MASK_SHORT and GATEWAY_IP in /root/{{ app_name }}_image/start.sh with the calculated values
+sed -i "s/HB_START_SH_TAP_IP_MASK_SHORT/${TAP_IP}\\${MASK_SHORT}/g" /root/{{ app_name }}_image/start.sh
+sed -i "s/HB_START_SH_GATEWAY_IP/${GW_IP}/g" /root/{{ app_name }}_image/start.sh
+
 # set up a tap network interface for the Firecracker VM to use
 TAP_DEV="fc-$GW_ID-tap0"
 ip link del "$TAP_DEV" 2> /dev/null || true

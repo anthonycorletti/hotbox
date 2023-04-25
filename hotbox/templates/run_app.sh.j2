@@ -20,7 +20,7 @@ MASK_SHORT="/30"
 for GW_ID in $(seq 0 255); do
   GW_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 1) / 256)) $(((4 * GW_ID + 1) % 256)))"
   TAP_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 2) / 256)) $(((4 * GW_ID + 2) % 256)))"
-  FC_MAC="$(printf '02:FC:00:00:%02X:%02X' $((GW_ID / 256)) $((GW_ID % 256)))"
+  # FC_MAC="$(printf '02:FC:00:00:%02X:%02X' $((GW_ID / 256)) $((GW_ID % 256)))"
   if ! ip addr show | grep -q $TAP_IP; then
     break
   fi
@@ -41,6 +41,8 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
 iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
+
+FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
 # Download a linux kernel binary
 wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin

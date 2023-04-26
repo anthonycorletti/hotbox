@@ -6,7 +6,7 @@
 echo "Setting up network interface"
 ifconfig eth0 up
 echo "Setting up IP address"
-addr add dev eth0 $HB_TAP_MASK
+ip addr add dev eth0 $HB_TAP_MASK
 echo "Setting up default gateway"
 ip route add default via $HB_GATEWAY
 

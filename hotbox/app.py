@@ -86,9 +86,13 @@ class AppService:
         image_dir: str,
         image: Image,
     ) -> None:
+        _install = self._get_install_steps(image=image)
+        _build = self._get_build_steps(image=image)
         with open(f"{image_dir}/Dockerfile.j2") as f:
             template = Template(f.read()).render(
                 image=image.value,
+                install=_install,
+                build=_build,
             )
         with open(f"{image_dir}/Dockerfile", "w") as f:
             f.write(template)
@@ -97,12 +101,8 @@ class AppService:
     def _create_entrypoint(
         self, image_dir: str, fs_size_mib: int, image: Image
     ) -> None:
-        _install = self._get_install_steps(image=image)
-        _build = self._get_build_steps(image=image)
         with open(f"{image_dir}/entrypoint.j2") as f:
             template = Template(f.read()).render(
-                install=_install,
-                build=_build,
                 fs_size_mib=fs_size_mib,
             )
         with open(f"{image_dir}/entrypoint", "w") as f:

@@ -10,10 +10,10 @@ tar xzf /tmp/alpine-minirootfs-3.14.9-aarch64.tar.gz -C /tmp/rootfs
 
 cp -r /tmp/overlay/* /tmp/rootfs/
 
-CODEDIR=${CODEDIR:-/opt/code}
-cd $CODEDIR
-{{ install }}
-{{ build }}
+# CODEDIR=${CODEDIR:-/opt/code}
+# cd $CODEDIR
+# {{ install }}
+# {{ build }}
 
 cat > /tmp/rootfs/prepare.sh <<EOF
 passwd root -d root

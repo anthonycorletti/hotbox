@@ -10,11 +10,6 @@ tar xzf /tmp/alpine-minirootfs-3.14.9-aarch64.tar.gz -C /tmp/rootfs
 
 cp -r /tmp/overlay/* /tmp/rootfs/
 
-# CODEDIR=${CODEDIR:-/opt/code}
-# cd $CODEDIR
-# {{ install }}
-# {{ build }}
-
 cat > /tmp/rootfs/prepare.sh <<EOF
 passwd root -d root
 apk update
@@ -27,7 +22,5 @@ rm /tmp/rootfs/prepare.sh
 umount /tmp/rootfs
 rm -rf /tmp/rootfs
 
-# OUTDIR=${OUTDIR:-$CODEDIR}
-# mkdir -p $OUTDIR || :
-# cp /tmp/alpine-minirootfs-aarch64.ext4 $OUTDIR
+mkdir -p /opt/code || :
 cp /tmp/alpine-minirootfs-aarch64.ext4 /opt/code

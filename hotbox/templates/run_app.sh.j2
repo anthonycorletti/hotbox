@@ -57,7 +57,7 @@ mkdir -p $OUTDIR
 docker run --rm --privileged --env HB_TAP_MASK="$TAP_IP$MASK_SHORT" --env HB_GATEWAY=$GW_IP -v $OUTDIR:/opt/code {{ app_name }}
 # NOTE: remove the --env vars if you don't want to set up networking
 ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
-mv $OUTDIR/rootfs $ROOTFSDIR
+mv $OUTDIR/alpine-minirootfs-aarch64.ext4 $ROOTFSDIR
 ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"
 
 # # Download a rootfs example

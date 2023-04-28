@@ -12,6 +12,10 @@ COPY resolv.conf /tmp/overlay/etc/resolv.conf
 COPY entrypoint /entrypoint
 
 WORKDIR /opt/code
+
+RUN pwd
+RUN ls -al
+
 RUN {{ install }} \
     && {{ build }}
 

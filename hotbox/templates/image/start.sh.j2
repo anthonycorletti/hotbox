@@ -1,18 +1,18 @@
 # minimal init
-# rc-service sysfs start
-# rc-service networking start
+rc-service sysfs start
+rc-service networking start
 
 # set up network interface
 echo "Setting up network interface"
 ifconfig eth0 up
-# echo "Setting up IP address"
-# ip addr add dev eth0 $HB_TAP_MASK
-# echo "Setting up default gateway"
-# ip route add default via $HB_GATEWAY
+echo "Setting up IP address"
+ip addr add dev eth0 $HB_TAP_MASK
+echo "Setting up default gateway"
+ip route add default via $HB_GATEWAY
 
 # run the code in the microvm
 # the firecracker compiler will place the code here
-# {{ entrypoint }}
+{{ entrypoint }}
 
 # shutdown the microvm
-# reboot
+reboot

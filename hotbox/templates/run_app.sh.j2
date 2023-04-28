@@ -27,7 +27,7 @@ for GW_ID in $(seq 0 255); do
 done
 DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 # NOTE: toggle eth0:on to eth0:off to disable networking
-KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
+KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
 
 # set up a tap network interface for the Firecracker VM to use
 TAP_DEV="fc-$GW_ID-tap0"
@@ -53,7 +53,7 @@ KERNEL_IMAGE_PATH="vmlinux.bin"
 #
 docker build -t {{ app_name }} /root/{{ app_name }}_image
 CODEDIR="$(readlink -f /root/{{ app_name }}_code)"
-docker run --rm --privileged --env HB_TAP_MASK="$TAP_IP$MASK_SHORT" --env HB_GATEWAY=$GW_IP -v $CODEDIR:/opt/code {{ app_name }}
+docker run --rm --privileged --env HB_TAP_MASK="$TAP_IP$MASK_SHORT" --env HB_GATEWAY=$GW_IP --env CODEDIR=$CODEDIR -v $CODEDIR:/opt/code {{ app_name }}
 # NOTE: remove the --env vars if you don't want to set up networking
 ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $CODEDIR/rootfs $ROOTFSDIR

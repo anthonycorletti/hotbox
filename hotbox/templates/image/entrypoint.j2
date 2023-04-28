@@ -27,6 +27,7 @@ rm /tmp/rootfs/prepare.sh
 umount /tmp/rootfs
 rm -rf /tmp/rootfs
 
-OUTDIR=${OUTDIR:-$CODEDIR}
-mkdir -p $OUTDIR || :
-cp /tmp/alpine-minirootfs-aarch64.ext4 $OUTDIR
+# OUTDIR=${OUTDIR:-$CODEDIR}
+# mkdir -p $OUTDIR || :
+# cp /tmp/alpine-minirootfs-aarch64.ext4 $OUTDIR
+cp /tmp/alpine-minirootfs-aarch64.ext4 /opt/code

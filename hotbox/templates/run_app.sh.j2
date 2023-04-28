@@ -1,4 +1,5 @@
 #!/bin/bash -ex
+# NOTE: This is a hack and will be replaced by some kind of productized code.
 
 ARCH="$(uname -m)"
 
@@ -44,12 +45,8 @@ iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
 
 FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
-# Download a linux kernel binary
-wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin
-KERNEL_IMAGE_PATH="vmlinux.bin"
-
 #
-# Build and run image!
+# Build and run image to generate rootfs
 #
 docker build -t {{ app_name }} /root/{{ app_name }}_image
 OUTDIR=" /root/{{ app_name }}_outdir"
@@ -71,6 +68,9 @@ ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"
 # chmod 400 ./ubuntu-18.04.id_rsa
 # after you run the config file, you can ssh into the micro VM with:
 # ssh -o StrictHostKeyChecking=false -i ubuntu-18.04.id_rsa root@169.254.0.21
+
+wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin
+KERNEL_IMAGE_PATH="vmlinux.bin"
 
 # make a configuration file
 cat <<EOF > fc-{{ app_name }}-config.json

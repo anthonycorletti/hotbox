@@ -33,7 +33,7 @@ class AppService:
         tmpdir: str,
     ) -> str:
         _image_dir = f"{tmpdir}/{app_name}_image"
-        _code_dir = f"{tmpdir}/{app_name}_code"
+        _code_dir = f"{_image_dir}/code"
         os.makedirs(_image_dir, exist_ok=True)
         os.makedirs(_code_dir, exist_ok=True)
         shutil.copytree(

@@ -1,8 +1,5 @@
 FROM {{ image }}
 
-ARG CODEDIR
-ENV CODEDIR=$CODEDIR
-
 RUN cd /tmp && wget http://dl-cdn.alpinelinux.org/alpine/v3.14/releases/aarch64/alpine-minirootfs-3.14.9-aarch64.tar.gz
 
 COPY inittab /tmp/overlay/etc/inittab
@@ -11,10 +8,8 @@ COPY start.sh /tmp/overlay/start.sh
 COPY resolv.conf /tmp/overlay/etc/resolv.conf
 COPY entrypoint /entrypoint
 
-COPY $CODEDIR /opt/code
+COPY code /opt/code
 WORKDIR /opt/code
-RUN pwd
-RUN ls -al
 
 RUN {{ install }} \
     && {{ build }}

@@ -15,4 +15,5 @@ iface eth0 inet static
     address GW_IP
     netmask MASK_LONG
     network SUBNET_IP
+    dns-nameservers 8.8.8.8
     # broadcast BROADCAST_IP

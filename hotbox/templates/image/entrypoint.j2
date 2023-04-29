@@ -24,7 +24,7 @@ cp -r /tmp/overlay/* /tmp/rootfs/
 cat > /tmp/rootfs/prepare.sh <<EOF
 passwd root -d root
 apk update
-apk add -u openrc ca-certificates
+apk add -u openrc ca-certificates haveged openssl udev
 exit
 EOF
 chroot /tmp/rootfs/ /bin/sh /prepare.sh

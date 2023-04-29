@@ -28,7 +28,7 @@ for FC_ID in $(seq 0 255); do
 done
 
 # NOTE: toggle eth0:on to eth0:off to disable networking
-KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
+KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on random.hwrng_user_managed=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
 
 # set up a tap network interface for the Firecracker VM to use
 TAP_DEV="fc-$FC_ID-tap0"

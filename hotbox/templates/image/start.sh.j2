@@ -1,7 +1,7 @@
-# minimal init
 echo "Starting sysfs and networking"
 rc-service sysfs start
-rc-service networking start
+rc-service udev start
+rc-service haveged start
 
 # Set up network interface
 # Note: remove this section to disable external networking
@@ -15,10 +15,8 @@ echo "Setting up eth0"
 ip link set eth0 up
 echo "Enable packet forwarding for internet access"
 echo 1 > /proc/sys/net/ipv4/ip_forward
-
-# restart networking
-echo "Restarting networking"
-rc-service networking restart
+echo "Start networking"
+rc-service networking start
 
 # # run the code in the microvm
 # # the firecracker compiler will place the code here

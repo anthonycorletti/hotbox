@@ -60,7 +60,7 @@ FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 docker build -t {{ app_name }} /root/{{ app_name }}_image
 OUTDIR=" /root/{{ app_name }}_outdir"
 mkdir -p $OUTDIR
-docker run --rm --privileged --env TAP_IP=$TAP_IP --env MASK_SHORT="$MASK_SHORT" --env TAP_DEV=$TAP_DEV --ENV BRIDGE_IP=$BRIDGE_IP -v $OUTDIR:/opt/code {{ app_name }}
+docker run --rm --privileged --env TAP_IP=$TAP_IP --env MASK_SHORT="$MASK_SHORT" --env TAP_DEV=$TAP_DEV --env BRIDGE_IP=$BRIDGE_IP -v $OUTDIR:/opt/code {{ app_name }}
 ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $OUTDIR/alpine-minirootfs-aarch64.ext4 $ROOTFSDIR
 ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"

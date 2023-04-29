@@ -7,7 +7,7 @@ rc-service networking start
 echo "Setting up eth0"
 ifconfig eth0 up
 echo "Setting up IP address"
-ip addr add $GW_IP$MASK_SHORT dev eth0
+ip addr add GW_IPMASK_SHORT dev eth0
 echo "Setting up default gateway"
 ip link set eth0 up
 echo "Enable packet forwarding for internet access"

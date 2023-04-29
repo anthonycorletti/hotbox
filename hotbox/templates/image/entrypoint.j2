@@ -19,6 +19,12 @@ EOF
 chroot /tmp/rootfs/ /bin/sh /prepare.sh
 rm /tmp/rootfs/prepare.sh
 
+# NOTE: disable this to remove networking from the image
+sed -i "s/SUBNET_IP/$SUBNET_IP/g" /tmp/overlay/etc/network/interfaces
+sed -i "s/GW_IP/$GW_IP/g" /tmp/overlay/etc/network/interfaces
+sed -i "s/TAP_IP/$TAP_IP/g" /tmp/overlay/etc/network/interfaces
+sed -i "s/MASK_LONG/$MASK_LONG/g" /tmp/overlay/etc/network/interfaces
+
 umount /tmp/rootfs
 rm -rf /tmp/rootfs
 

@@ -19,7 +19,7 @@ MASK_SHORT="/30"
 # for the gateway and the tap interface. Pick the first available IP
 # address in the range 192.168.0.0/16.
 for FC_ID in $(seq 0 255); do
-  FC_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 1) / 256)) $(((4 * FC_ID + 1) % 256)))"
+  GW_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 1) / 256)) $(((4 * FC_ID + 1) % 256)))"
   TAP_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 2) / 256)) $(((4 * FC_ID + 2) % 256)))"
   if ! ip addr show | grep -q $TAP_IP; then
     break
@@ -27,7 +27,7 @@ for FC_ID in $(seq 0 255); do
 done
 
 # NOTE: toggle eth0:on to eth0:off to disable networking
-KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${FC_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
+KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
 
 # set up a tap network interface for the Firecracker VM to use
 TAP_DEV="fc-$FC_ID-tap0"
@@ -49,7 +49,7 @@ iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
 docker build -t {{ app_name }} /root/{{ app_name }}_image
 OUTDIR=" /root/{{ app_name }}_outdir"
 mkdir -p $OUTDIR
-docker run --rm --privileged --env FC_IP=$FC_IP --env MASK_SHORT="$MASK_SHORT" -v $OUTDIR:/opt/code {{ app_name }}
+docker run --rm --privileged --env SUBNET_IP=$SUBNET_IP --env MASK_LONG=$MASK_LONG --env TAP_IP=$TAP_IP --env GW_IP=$GW_IP --env MASK_SHORT="$MASK_SHORT" -v $OUTDIR:/opt/code {{ app_name }}
 ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $OUTDIR/alpine-minirootfs-aarch64.ext4 $ROOTFSDIR
 ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"

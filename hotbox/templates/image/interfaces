@@ -1,2 +1,18 @@
+#
+#   /etc/network/interfaces
+#
+# We always want the loopback interface
+#
 auto lo
 iface lo inet loopback
+#
+# Ethernet card setup: (broadcast and gateway are optional)
+# Note: remove this section to disable external networking
+#
+auto eth0
+iface eth0 inet static
+    network SUBNET_IP
+    gateway GW_IP
+    address TAP_IP
+    netmask MASK_LONG
+    # broadcast BROADCAST_IP

@@ -2,15 +2,16 @@
 rc-service sysfs start
 rc-service networking start
 
-# set up network interface
+# Set up network interface
+# Note: remove this section to disable external networking
 echo "Setting up eth0"
 ifconfig eth0 up
-
 echo "Setting up IP address"
-ip addr add $FC_IP$MASK_SHORT dev eth0
-
+ip addr add $GW_IP$MASK_SHORT dev eth0
 echo "Setting up default gateway"
 ip link set eth0 up
+echo "Enable packet forwarding for internet access"
+echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # # run the code in the microvm
 # # the firecracker compiler will place the code here

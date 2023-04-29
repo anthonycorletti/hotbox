@@ -21,7 +21,6 @@ MASK_SHORT="/30"
 for FC_ID in $(seq 0 255); do
   FC_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 1) / 256)) $(((4 * FC_ID + 1) % 256)))"
   TAP_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 2) / 256)) $(((4 * FC_ID + 2) % 256)))"
-  # FC_MAC="$(printf '02:FC:00:00:%02X:%02X' $((FC_ID / 256)) $((FC_ID % 256)))"
   if ! ip addr show | grep -q $TAP_IP; then
     break
   fi

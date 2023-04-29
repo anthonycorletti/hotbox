@@ -2,7 +2,8 @@
 
 cd /root
 
-apt-get update -y
+# apt-get update -y and retry if it doesnt work
+for i in {1..5}; do apt-get update -y && break || sleep 15; done
 
 ARCH="$(uname -m)"
 FC_VERSION="{{ firecracker_version }}"

@@ -18,6 +18,7 @@ MASK_SHORT="/30"
 # Based on how many taps we have, we need to set up the IP addresses
 # for the gateway and the tap interface. Pick the first available IP
 # address in the range 192.168.0.0/16.
+SUBNET_IP="192.168.0.0"
 for FC_ID in $(seq 0 255); do
   GW_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 1) / 256)) $(((4 * FC_ID + 1) % 256)))"
   TAP_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 2) / 256)) $(((4 * FC_ID + 2) % 256)))"

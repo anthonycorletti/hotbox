@@ -18,11 +18,9 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "Start networking"
 rc-service networking start
 
-# # run the code in the microvm
-# # the firecracker compiler will place the code here
-# {{ entrypoint }}
+# run the code in the microvm
+# the firecracker compiler will place the code here
+{{ entrypoint }}
 
 # # shutdown the microvm
-# reboot
-
-/bin/ash
+reboot

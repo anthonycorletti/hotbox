@@ -2,7 +2,7 @@
 ::sysinit:/sbin/openrc boot
 ::wait:/sbin/openrc default
 
-# TODO: respawn can be used when the process is expected to terminate
+# NOTE: respawn can be used when the process is expected to terminate
 ttyS0::once:/bin/ash /start.sh
 
 ::ctrlaltdel:/sbin/reboot

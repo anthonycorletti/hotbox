@@ -17,27 +17,35 @@ MASK_SHORT="/30"
 
 # Based on how many taps we have, we need to set up the IP addresses
 # for the gateway and the tap interface. Pick the first available IP
-# address in the local link range (169.254.0.0/16).
-for GW_ID in $(seq 0 255); do
-  GW_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 1) / 256)) $(((4 * GW_ID + 1) % 256)))"
-  TAP_IP="$(printf '169.254.%s.%s' $(((4 * GW_ID + 2) / 256)) $(((4 * GW_ID + 2) % 256)))"
-  # FC_MAC="$(printf '02:FC:00:00:%02X:%02X' $((GW_ID / 256)) $((GW_ID % 256)))"
+# address in the range 192.168.0.0/16.
+for FC_ID in $(seq 0 255); do
+  FC_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 1) / 256)) $(((4 * FC_ID + 1) % 256)))"
+  TAP_IP="$(printf '192.168.%s.%s' $(((4 * FC_ID + 2) / 256)) $(((4 * FC_ID + 2) % 256)))"
+  # FC_MAC="$(printf '02:FC:00:00:%02X:%02X' $((FC_ID / 256)) $((FC_ID % 256)))"
   if ! ip addr show | grep -q $TAP_IP; then
     break
   fi
 done
-DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
+
 # NOTE: toggle eth0:on to eth0:off to disable networking
-KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
+KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on ip=${FC_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
 
 # set up a tap network interface for the Firecracker VM to use
-TAP_DEV="fc-$GW_ID-tap0"
+TAP_DEV="fc-$FC_ID-tap0"
 ip link del "$TAP_DEV" 2> /dev/null || true
 ip tuntap add "$TAP_DEV" mode tap
 ip addr add "${TAP_IP}${MASK_SHORT}" dev "$TAP_DEV"
-ip link set "$TAP_DEV" up
+ip link set dev "$TAP_DEV" up
+
+# set up a bridge network interface for the host to use
+# NOTE: diable this if not using networking
+BRIDGE="fc-$FC_ID-br0"
+ip link add name $BRIDGE type bridge
+ip link set $TAP_DEV master $BRIDGE
+ip link set dev $BRIDGE up
 
 # Enable packet forwarding for internet access
+DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
 iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -51,32 +59,16 @@ FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 docker build -t {{ app_name }} /root/{{ app_name }}_image
 OUTDIR=" /root/{{ app_name }}_outdir"
 mkdir -p $OUTDIR
-docker run --rm --privileged --env HB_TAP_MASK="$TAP_IP$MASK_SHORT" --env HB_GATEWAY=$GW_IP -v $OUTDIR:/opt/code {{ app_name }}
-# NOTE: remove the --env vars if you don't want to set up networking
+docker run --rm --privileged --env TAP_IP=$TAP_IP --env MASK_SHORT="$MASK_SHORT" --env FC_IP=$FC_IP -v $OUTDIR:/opt/code {{ app_name }}
 ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $OUTDIR/alpine-minirootfs-aarch64.ext4 $ROOTFSDIR
 ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"
-
-# # Download a rootfs example
-# # In place of what's above, you can run this to test your setup
-#
-# wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/disks/${ARCH}/ubuntu-18.04.ext4
-# ROOTFS_PATH_ON_HOST="ubuntu-18.04.ext4"
-# # Download the ssh key for the rootfs
-# wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/disks/${ARCH}/ubuntu-18.04.id_rsa
-# # Set user read permission on the ssh key
-# chmod 400 ./ubuntu-18.04.id_rsa
-# after you run the config file, you can ssh into the micro VM with:
-# ssh -o StrictHostKeyChecking=false -i ubuntu-18.04.id_rsa root@169.254.0.21
-
-wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin
-KERNEL_IMAGE_PATH="vmlinux.bin"
 
 # make a configuration file
 cat <<EOF > fc-{{ app_name }}-config.json
 {
   "boot-source": {
-    "kernel_image_path": "$KERNEL_IMAGE_PATH",
+    "kernel_image_path": "vmlinux.bin",
     "boot_args": "$KERNEL_BOOT_ARGS"
   },
   "drives": [

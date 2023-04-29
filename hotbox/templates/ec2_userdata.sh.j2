@@ -5,8 +5,13 @@ cd /root
 # apt-get update -y and retry if it doesnt work
 for i in {1..5}; do apt-get update -y && break || sleep 15; done
 
+# Set a few variables
 ARCH="$(uname -m)"
 FC_VERSION="{{ firecracker_version }}"
+
+# Download rootfs and kernel
+wget --no-clobber http://dl-cdn.alpinelinux.org/alpine/v3.14/releases/$ARCH/alpine-minirootfs-3.14.9-$ARCH.tar.gz
+wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin
 
 # Download firecracker
 wget --no-clobber https://github.com/firecracker-microvm/firecracker/releases/download/${FC_VERSION}/firecracker-${FC_VERSION}-${ARCH}.tgz

@@ -36,23 +36,12 @@ ip tuntap add "$TAP_DEV" mode tap
 ip addr add "${TAP_IP}${MASK_SHORT}" dev "$TAP_DEV"
 ip link set dev "$TAP_DEV" up
 
-# set up a bridge network interface for the host to use
-# NOTE: diable this if not using networking
-BRIDGE="fc-$FC_ID-br0"
-ip link add name $BRIDGE type bridge
-ip link set $TAP_DEV master $BRIDGE
-ip link set dev $BRIDGE up
-BRIDGE_IP=$(ip addr show dev $BRIDGE | grep -w inet | awk '{print $2}' | awk -F/ '{print $1}')
-
-
 # Enable packet forwarding for internet access
 DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
-iptables -A FORWARD -i $DEVICE_NAME -o $TAP_DEV -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -t nat -A POSTROUTING -s $TAP_IP/32 -o $DEVICE_NAME -j MASQUERADE
-
-FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
 #
 # Build and run image to generate rootfs
@@ -60,10 +49,13 @@ FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 docker build -t {{ app_name }} /root/{{ app_name }}_image
 OUTDIR=" /root/{{ app_name }}_outdir"
 mkdir -p $OUTDIR
-docker run --rm --privileged --env TAP_IP=$TAP_IP --env MASK_SHORT="$MASK_SHORT" --env TAP_DEV=$TAP_DEV --env BRIDGE_IP=$BRIDGE_IP -v $OUTDIR:/opt/code {{ app_name }}
+docker run --rm --privileged --env FC_IP=$FC_IP --env MASK_SHORT="$MASK_SHORT" -v $OUTDIR:/opt/code {{ app_name }}
 ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $OUTDIR/alpine-minirootfs-aarch64.ext4 $ROOTFSDIR
 ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"
+
+# get the MAC address of the tap device
+FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
 # make a configuration file
 cat <<EOF > fc-{{ app_name }}-config.json

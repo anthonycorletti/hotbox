@@ -15,6 +15,7 @@ sed -i "s/TAP_IP/$TAP_IP/g" /tmp/overlay/etc/network/interfaces
 sed -i "s/MASK_LONG/$MASK_LONG/g" /tmp/overlay/etc/network/interfaces
 
 # NOTE: disable this to remove networking from the image
+sed -i "s/TAP_IP/$TAP_IP/g" /tmp/overlay/start.sh
 sed -i "s/GW_IP/$GW_IP/g" /tmp/overlay/start.sh
 sed -i "s/MASK_SHORT/\\$MASK_SHORT/g" /tmp/overlay/start.sh
 

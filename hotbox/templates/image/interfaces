@@ -11,8 +11,8 @@ iface lo inet loopback
 #
 auto eth0
 iface eth0 inet static
-    network SUBNET_IP
-    gateway GW_IP
-    address TAP_IP
+    gateway TAP_IP
+    address GW_IP
     netmask MASK_LONG
+    network SUBNET_IP
     # broadcast BROADCAST_IP

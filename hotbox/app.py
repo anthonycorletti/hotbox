@@ -8,7 +8,7 @@ from typing import List, Optional
 import httpx
 from httpx import Response
 
-from hotbox._types import ContainerSpec, GetAppsResponse, Routes
+from hotbox._types import ContainerSpec, GetAppsResponse, Image, Routes
 from hotbox.settings import env
 from hotbox.templates import (
     BaseDockerfileTemplate,
@@ -112,9 +112,13 @@ class AppService:
         image_dir: str,
         container_spec: ContainerSpec,
     ) -> None:
+        if isinstance(container_spec.image, Image):
+            image = container_spec.image.value
+        else:
+            image = container_spec.image
         content = BaseDockerfileTemplate(
             inputs={
-                "image": str(container_spec.image),
+                "image": image,
                 "install": container_spec.install,
                 "build": container_spec.build,
             }

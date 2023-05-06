@@ -1,5 +1,6 @@
 from typing import Dict
 
+from jinja2 import Template
 from pydantic import BaseModel, StrictStr
 
 
@@ -8,10 +9,10 @@ class BaseTemplate(BaseModel):
     inputs: Dict[StrictStr, StrictStr] = dict()
 
     def render(self) -> str:
-        return self.content.format(**self.inputs)
+        return Template(self.content).render(**self.inputs)
 
 
-BASE_DOCKERFILE_TEMPLATE = """FROM {image}
+BASE_DOCKERFILE_TEMPLATE = """FROM {{ image }}
 
 RUN cd /tmp && wget http://dl-cdn.alpinelinux.org/alpine/v3.14/releases/aarch64/alpine-minirootfs-3.14.9-aarch64.tar.gz
 COPY inittab /tmp/overlay/etc/inittab
@@ -23,8 +24,9 @@ COPY entrypoint /entrypoint
 
 WORKDIR /tmp/overlay/code
 
-RUN {install} \\
-    && {build}
+RUN {{ install }}
+
+RUN {{ build }}
 
 CMD ["/bin/bash", "/entrypoint"]
 """  # noqa: E501
@@ -38,7 +40,7 @@ BASE_ENTRYPOINT_TEMPLATE = """#!/bin/bash
 
 set -ex
 
-dd if=/dev/zero of=/tmp/alpine-minirootfs-aarch64.ext4 bs=1M count={fs_size_mib}
+dd if=/dev/zero of=/tmp/alpine-minirootfs-aarch64.ext4 bs=1M count={{ fs_size_mib }}
 mkfs.ext4 /tmp/alpine-minirootfs-aarch64.ext4
 mkdir -p /tmp/rootfs
 mount -o loop /tmp/alpine-minirootfs-aarch64.ext4 /tmp/rootfs
@@ -100,7 +102,7 @@ rc-service networking start
 
 # run the code in the microvm
 # the firecracker compiler will place the code here
-{entrypoint}
+{{ entrypoint }}
 
 # shutdown the microvm
 reboot
@@ -167,12 +169,12 @@ BASE_RUN_APP_TEMPLATE = """#!/bin/bash -ex
 ARCH="$(uname -m)"
 
 # Stop the firecracker process if it is already running
-API_SOCKET="/root/fc-{app_name}.socket"
+API_SOCKET="/root/fc-{{ app_name }}.socket"
 rm -f $API_SOCKET
 
 # Run firecracker
-pkill -f "${{API_SOCKET}}" || true
-firecracker --api-sock "${{API_SOCKET}}" &
+pkill -f "${API_SOCKET}" || true
+firecracker --api-sock "${API_SOCKET}" &
 
 # set up the kernel boot args and env vars
 MASK_LONG="255.255.255.252"
@@ -191,17 +193,17 @@ for FC_ID in $(seq 0 255); do
 done
 
 # NOTE: toggle eth0:on to eth0:off to disable networking
-KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on random.hwrng_user_managed=on ip=${{GW_IP}}::${{TAP_IP}}:${{MASK_LONG}}::eth0:on"
+KERNEL_BOOT_ARGS="console=ttyS0 rw noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on random.hwrng_user_managed=on ip=${GW_IP}::${TAP_IP}:${MASK_LONG}::eth0:on"
 
 # set up a tap network interface for the Firecracker VM to use
 TAP_DEV="fc-$FC_ID-tap0"
 ip link del "$TAP_DEV" 2> /dev/null || true
 ip tuntap add "$TAP_DEV" mode tap
-ip addr add "${{TAP_IP}}${{MASK_SHORT}}" dev "$TAP_DEV"
+ip addr add "${TAP_IP}${MASK_SHORT}" dev "$TAP_DEV"
 ip link set dev "$TAP_DEV" up
 
 # Enable packet forwarding for internet access
-DEVICE_NAME=$(ip route | grep default | awk '{{print $5}}')
+DEVICE_NAME=$(ip route | grep default | awk '{print $5}')
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o $DEVICE_NAME -j MASQUERADE
 iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -210,48 +212,48 @@ iptables -A FORWARD -i $TAP_DEV -o $DEVICE_NAME -j ACCEPT
 #
 # Build and run image to generate rootfs
 #
-docker build -t {app_name} /root/{app_name}_image
-OUTDIR=" /root/{app_name}_outdir"
+docker build -t {{ app_name }} /root/{{ app_name }}_image
+OUTDIR=" /root/{{ app_name }}_outdir"
 mkdir -p $OUTDIR
-docker run --rm --privileged --env SUBNET_IP=$SUBNET_IP --env MASK_LONG=$MASK_LONG --env TAP_IP=$TAP_IP --env GW_IP=$GW_IP --env MASK_SHORT="$MASK_SHORT" -v $OUTDIR:/opt/code {app_name}
-ROOTFSDIR="$(readlink -f {app_name}_fs)"
+docker run --rm --privileged --env SUBNET_IP=$SUBNET_IP --env MASK_LONG=$MASK_LONG --env TAP_IP=$TAP_IP --env GW_IP=$GW_IP --env MASK_SHORT="$MASK_SHORT" -v $OUTDIR:/opt/code {{ app_name }}
+ROOTFSDIR="$(readlink -f {{ app_name }}_fs)"
 mv $OUTDIR/alpine-minirootfs-aarch64.ext4 $ROOTFSDIR
-ROOTFS_PATH_ON_HOST="/root/{app_name}_fs"
+ROOTFS_PATH_ON_HOST="/root/{{ app_name }}_fs"
 
 # get the MAC address of the tap device
 FC_MAC="$(cat /sys/class/net/$TAP_DEV/address)"
 
 # make a configuration file
-cat <<EOF > fc-{app_name}-config.json
-{{
-  "boot-source": {{
+cat <<EOF > fc-{{ app_name }}-config.json
+{
+  "boot-source": {
     "kernel_image_path": "vmlinux.bin",
     "boot_args": "$KERNEL_BOOT_ARGS"
-  }},
+  },
   "drives": [
-    {{
+    {
       "drive_id": "rootfs",
       "path_on_host": "$ROOTFS_PATH_ON_HOST",
       "is_root_device": true,
       "is_read_only": false
-    }}
+    }
   ],
   "network-interfaces": [
-      {{
+      {
           "iface_id": "eth0",
           "guest_mac": "$FC_MAC",
           "host_dev_name": "$TAP_DEV"
-      }}
+      }
   ],
-  "machine-config": {{
-    "vcpu_count": {vcpu_count},
-    "mem_size_mib": {mem_size_mib}
-  }}
-}}
+  "machine-config": {
+    "vcpu_count": {{ vcpu_count }},
+    "mem_size_mib": {{ mem_size_mib }}
+  }
+}
 EOF
 
 # start firecracker
-firecracker --no-api --config-file fc-{app_name}-config.json
+firecracker --no-api --config-file fc-{{ app_name }}-config.json
 """  # noqa: E501
 
 
@@ -268,27 +270,24 @@ for i in {1..5}; do apt-get update -y && break || sleep 15; done
 
 # Set a few variables
 ARCH="$(uname -m)"
-FC_VERSION="{firecracker_version}"
+FC_VERSION="{{ firecracker_version }}"
 
 # Download kernel
-wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${{ARCH}}/ubuntu/kernel/vmlinux.bin
+wget --no-clobber https://s3.amazonaws.com/spec.ccfc.min/img/${ARCH}/ubuntu/kernel/vmlinux.bin
 
 # Download firecracker
-wget --no-clobber https://github.com/firecracker-microvm/firecracker/releases/download/${{FC_VERSION}}/firecracker-${{FC_VERSION}}-${{ARCH}}.tgz
-tar -xvf firecracker-${{FC_VERSION}}-${{ARCH}}.tgz
-cp release-${{FC_VERSION}}-${{ARCH}}/firecracker-${{FC_VERSION}}-${{ARCH}} /usr/local/bin/firecracker
-cp release-${{FC_VERSION}}-${{ARCH}}/jailer-${{FC_VERSION}}-${{ARCH}} /usr/local/bin/jailer
-rm -rf firecracker-${{FC_VERSION}}-${{ARCH}}.tgz release-${{FC_VERSION}}-${{ARCH}}/
+wget --no-clobber https://github.com/firecracker-microvm/firecracker/releases/download/${FC_VERSION}/firecracker-${FC_VERSION}-${ARCH}.tgz
+tar -xvf firecracker-${FC_VERSION}-${ARCH}.tgz
+cp release-${FC_VERSION}-${ARCH}/firecracker-${FC_VERSION}-${ARCH} /usr/local/bin/firecracker
+cp release-${FC_VERSION}-${ARCH}/jailer-${FC_VERSION}-${ARCH} /usr/local/bin/jailer
+rm -rf firecracker-${FC_VERSION}-${ARCH}.tgz release-${FC_VERSION}-${ARCH}/
 
 # Install docker
 apt-get remove docker docker-engine docker.io containerd runc -y
 apt-get install ca-certificates curl gnupg -y
 mkdir -m 0755 -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo \\
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \\
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \\
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt-get update -y
 apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
@@ -307,13 +306,13 @@ hotbox server run --port 8420 &
 apt-get install nginx -y
 rm /etc/nginx/sites-enabled/default
 cat <<EOF > /etc/nginx/sites-enabled/hotbox
-server {{
+server {
     listen 8088;
     server_name _;
-    location / {{
+    location / {
         proxy_pass http://localhost:8420;
-    }}
-}}
+    }
+}
 EOF
 systemctl restart nginx
 """  # noqa: E501

@@ -7,11 +7,18 @@ from typing import List, Optional
 
 import httpx
 from httpx import Response
-from jinja2 import Template
 
 from hotbox._types import ContainerSpec, GetAppsResponse, Routes
-from hotbox.const import DEFAULT_IMAGE_TEMPLATE_DIR, DEFAULT_RUN_APP_TEMPLATE_FILEPATH
 from hotbox.settings import env
+from hotbox.templates import (
+    BaseDockerfileTemplate,
+    BaseEntrypointTemplate,
+    BaseInitTabTemplate,
+    BaseInterfacesTemplate,
+    BaseResolvConfTemplate,
+    BaseRunAppTemplate,
+    BaseStartMicovmTemplate,
+)
 
 
 class AppService:
@@ -25,23 +32,13 @@ class AppService:
         container_spec: ContainerSpec,
         vcpu_count: int,
         mem_size_mib: int,
-        fs_size_mib: int,
         tmpdir: str,
+        fs_size_mib: int,
     ) -> str:
         _image_dir = f"{tmpdir}/{app_name}_image"
         _code_dir = f"{_image_dir}/code"
         os.makedirs(_image_dir, exist_ok=True)
         os.makedirs(_code_dir, exist_ok=True)
-        shutil.copytree(
-            src=f"{DEFAULT_IMAGE_TEMPLATE_DIR}",
-            dst=_image_dir,
-            dirs_exist_ok=True,
-        )
-        shutil.copytree(
-            src=app_code_path,
-            dst=_code_dir,
-            dirs_exist_ok=True,
-        )
         self._create_image(
             image_dir=_image_dir,
             fs_size_mib=fs_size_mib,
@@ -53,6 +50,11 @@ class AppService:
             mem_size_mib=mem_size_mib,
             tmpdir=tmpdir,
         )
+        shutil.copytree(
+            src=app_code_path,
+            dst=_code_dir,
+            dirs_exist_ok=True,
+        )
         # tar up the bundle
         bundle_path = f"{tmpdir}/{app_name}"
         shutil.make_archive(
@@ -63,8 +65,20 @@ class AppService:
         return f"{bundle_path}.tar.gz"
 
     def _create_image(
-        self, container_spec: ContainerSpec, image_dir: str, fs_size_mib: int
+        self,
+        container_spec: ContainerSpec,
+        image_dir: str,
+        fs_size_mib: int,
     ) -> None:
+        self._create_inittab(
+            image_dir=image_dir,
+        )
+        self._create_interfaces(
+            image_dir=image_dir,
+        )
+        self._create_resolvconf(
+            image_dir=image_dir,
+        )
         self._create_dockerfile(
             image_dir=image_dir,
             container_spec=container_spec,
@@ -78,56 +92,72 @@ class AppService:
             container_spec=container_spec,
         )
 
+    def _create_inittab(self, image_dir: str) -> None:
+        content = BaseInitTabTemplate()
+        with open(f"{image_dir}/inittab", "w") as f:
+            f.write(content.render())
+
+    def _create_interfaces(self, image_dir: str) -> None:
+        content = BaseInterfacesTemplate()
+        with open(f"{image_dir}/interfaces", "w") as f:
+            f.write(content.render())
+
+    def _create_resolvconf(self, image_dir: str) -> None:
+        content = BaseResolvConfTemplate()
+        with open(f"{image_dir}/resolv.conf", "w") as f:
+            f.write(content.render())
+
     def _create_dockerfile(
         self,
         image_dir: str,
         container_spec: ContainerSpec,
     ) -> None:
-        with open(f"{image_dir}/Dockerfile.j2") as f:
-            template = Template(f.read()).render(
-                image=str(container_spec.image),
-                install=container_spec.install,
-                build=container_spec.build,
-            )
+        content = BaseDockerfileTemplate(
+            inputs={
+                "image": str(container_spec.image),
+                "install": container_spec.install,
+                "build": container_spec.build,
+            }
+        )
         with open(f"{image_dir}/Dockerfile", "w") as f:
-            f.write(template)
-        os.remove(f"{image_dir}/Dockerfile.j2")
+            f.write(content.render())
 
     def _create_entrypoint(
         self,
         image_dir: str,
         fs_size_mib: int,
     ) -> None:
-        with open(f"{image_dir}/entrypoint.j2") as f:
-            template = Template(f.read()).render(
-                fs_size_mib=fs_size_mib,
-            )
+        content = BaseEntrypointTemplate(
+            inputs={
+                "fs_size_mib": str(fs_size_mib),
+            }
+        )
         with open(f"{image_dir}/entrypoint", "w") as f:
-            f.write(template)
-        os.remove(f"{image_dir}/entrypoint.j2")
+            f.write(content.render())
 
     def _create_start_script(
         self, image_dir: str, container_spec: ContainerSpec
     ) -> None:
-        with open(f"{image_dir}/start.sh.j2") as f:
-            template = Template(f.read()).render(
-                entrypoint=container_spec.entrypoint,
-            )
+        content = BaseStartMicovmTemplate(
+            inputs={
+                "entrypoint": container_spec.entrypoint,
+            }
+        )
         with open(f"{image_dir}/start.sh", "w") as f:
-            f.write(template)
-        os.remove(f"{image_dir}/start.sh.j2")
+            f.write(content.render())
 
     def _create_run_app(
         self, app_name: str, vcpu_count: int, mem_size_mib: int, tmpdir: str
     ) -> None:
-        with open(DEFAULT_RUN_APP_TEMPLATE_FILEPATH) as f:
-            template = Template(f.read()).render(
-                app_name=app_name,
-                vcpu_count=vcpu_count,
-                mem_size_mib=mem_size_mib,
-            )
+        content = BaseRunAppTemplate(
+            inputs={
+                "app_name": app_name,
+                "vcpu_count": str(vcpu_count),
+                "mem_size_mib": str(mem_size_mib),
+            }
+        )
         with open(f"{tmpdir}/{app_name}_run_app.sh", "w") as f:
-            f.write(template)
+            f.write(content.render())
 
     def upload_app_bundle(self, app_name: str, bundle_path: str) -> Response:
         response = httpx.post(

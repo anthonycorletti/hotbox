@@ -29,6 +29,8 @@ async def test_create_app_success_no_image(
             "tests/assets/code/go",
         ],
     )
+    print(result.stdout)
+    print(result.stderr)
     assert result.exit_code == 0
 
 

@@ -18,7 +18,6 @@ dependencies = [
     "typer >=0.4.0",
     "pydantic >=1.8.2",
     "rich >=10.12.0",
-    "jinja2 >=3.0.2",
     "python-multipart >=0.0.5",
     "uvicorn >=0.15.0",
     "httpx >=0.21.1",

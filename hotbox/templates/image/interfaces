@@ -7,7 +7,7 @@ auto lo
 iface lo inet loopback
 #
 # Ethernet card setup: (broadcast and gateway are optional)
-# Note: remove this section to disable external networking
+# NOTE: remove this section to disable external networking
 #
 auto eth0
 iface eth0 inet static

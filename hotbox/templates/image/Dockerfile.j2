@@ -9,6 +9,7 @@ COPY code /tmp/overlay/code
 COPY entrypoint /entrypoint
 
 WORKDIR /tmp/overlay/code
+
 RUN {{ install }} \
     && {{ build }}
 

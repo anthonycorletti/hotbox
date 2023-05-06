@@ -1,10 +1,9 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import boto3
-from jinja2 import Template
 
 from hotbox._types import Ec2Spec
-from hotbox.const import DEFAULT_USERDATA_TEMPLATE_FILEPATH
+from hotbox.templates import BaseEc2UserdataTemplate
 
 
 class Ec2Service:
@@ -38,12 +37,12 @@ class Ec2Service:
     def _template_userdata(
         self,
         firecracker_version: str,
-        userdata_template_filepath: Optional[str] = None,
     ) -> str:
-        if userdata_template_filepath is None:
-            userdata_template_filepath = DEFAULT_USERDATA_TEMPLATE_FILEPATH
-        with open(userdata_template_filepath) as f:
-            return Template(f.read()).render(firecracker_version=firecracker_version)
+        return BaseEc2UserdataTemplate(
+            inputs={
+                "firecracker_version": firecracker_version,
+            }
+        ).render()
 
     def create(self, spec: Ec2Spec, firecracker_version: str) -> Dict:
         ec2_client = self.ec2_client(region_name=spec.region)

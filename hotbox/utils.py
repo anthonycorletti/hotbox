@@ -24,9 +24,3 @@ def determine_lang(app_code_path: str) -> Optional[Language]:
             if lang in list(Language):
                 return Language(lang)
     return None
-
-
-def _set_templates_home() -> str:
-    import hotbox
-
-    return os.path.join(os.path.dirname(hotbox.__file__), "templates")

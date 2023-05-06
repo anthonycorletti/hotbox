@@ -72,7 +72,7 @@ hotbox create ec2 --region $REGION --key-name hotbox-example-$REGION --security-
 This should print `ok`. It might take a few minutes for the EC2 Instance to start up.
 
 ```bash
-curl -s $(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName'):8088/api/v0/healthcheck | jq -r .message
+curl -s $(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicIpAddress'):8088/api/v0/healthcheck | jq -r .message
 ```
 
 ## Deploy your code!
@@ -80,7 +80,7 @@ curl -s $(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Ins
 Set your hotbox API URL as an environment variable:
 
 ```bash
-export HOTBOX_API_URL="http://$(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName'):8088/api/v0"
+export HOTBOX_API_URL="http://$(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicIpAddress'):8088/api/v0"
 ```
 
 Let's use our example go code. You can find the code [here](https://github.com/anthonycorletti/hotbox/blob/main/examples/go).
@@ -94,7 +94,7 @@ hotbox create app -n my-app -c examples/go
 This example runs internally on the EC2 Instance, so we can check the status of the app on the EC2 Instance.
 
 ```bash
-ssh -i ~/hotbox-example-$REGION.pem ubuntu@$(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicDnsName')
+ssh -i ~/hotbox-example-$REGION.pem ubuntu@$(hotbox get ec2 --region $REGION | jq -r '.Reservations[] | select(.Instances[] | .State.Name == "running") | .Instances[].PublicIpAddress')
 ```
 
 Now that you're on the instance, run:

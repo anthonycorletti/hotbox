@@ -1,9 +1,0 @@
-::sysinit:/sbin/openrc sysinit
-::sysinit:/sbin/openrc boot
-::wait:/sbin/openrc default
-
-# NOTE: respawn can be used when the process is expected to terminate
-ttyS0::once:/bin/ash /start.sh
-
-::ctrlaltdel:/sbin/reboot
-::shutdown:/sbin/openrc shutdown

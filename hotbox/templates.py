@@ -153,7 +153,8 @@ class BaseInterfacesTemplate(BaseTemplate):
     content: StrictStr = BASE_INTERFACES_TEMPLATE
 
 
-BASE_RESOLV_CONF_TEMPLATE = """nameserver 8.8.8.8"""
+BASE_RESOLV_CONF_TEMPLATE = """nameserver 8.8.8.8
+"""
 
 
 class BaseResolvConfTemplate(BaseTemplate):

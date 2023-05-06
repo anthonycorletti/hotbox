@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, unique
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, StrictStr
 
@@ -93,3 +93,20 @@ class GetAppsResponse(BaseModel):
 
 class DeleteAppsResponse(BaseModel):
     deleted_apps: List[str] = list()
+
+
+class ContainerSpec(BaseModel):
+    image: Union[Image, StrictStr]
+    install: Optional[StrictStr]
+    entrypoint: Optional[StrictStr]
+    build: Optional[StrictStr]
+
+
+class GoContainerSpec(ContainerSpec):
+    image: Image = Image.go
+    build: StrictStr = "CGO_ENABLED=0 go build -o /tmp/overlay/usr/local/bin/fcvm-app"
+    install: StrictStr = "go get"
+    entrypoint: StrictStr = "/usr/local/bin/fcvm-app"
+
+
+DEFAULT_CONTAINERS: Dict[Image, ContainerSpec] = {Image.go: GoContainerSpec()}

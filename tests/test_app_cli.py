@@ -14,7 +14,7 @@ from hotbox.cli.main import app
         json={"message": "ok"},
     ),
 )
-async def test_create_app_success(
+async def test_create_app_success_no_image(
     mock_upload_app_bundle_post: mock.MagicMock,
     runner: CliRunner,
 ) -> None:
@@ -27,6 +27,39 @@ async def test_create_app_success(
             "test-app",
             "-c",
             "tests/assets/code/go",
+        ],
+    )
+    assert result.exit_code == 0
+
+
+@mock.patch(
+    "httpx.post",
+    return_value=Response(
+        status_code=200,
+        json={"message": "ok"},
+    ),
+)
+async def test_create_app_success_image(
+    mock_upload_app_bundle_post: mock.MagicMock,
+    runner: CliRunner,
+) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "create",
+            "app",
+            "-n",
+            "test-app",
+            "-c",
+            "tests/assets/code/go",
+            "--image",
+            "golang:1.20",
+            "--build",
+            "go build -o /tmp/overlay/usr/local/bin/app",
+            "--install",
+            "go get",
+            "--entrypoint",
+            "/tmp/overlay/usr/local/bin/app",
         ],
     )
     assert result.exit_code == 0

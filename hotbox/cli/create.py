@@ -4,7 +4,7 @@ from typing import List
 import orjson
 from typer import Exit, FileText, Option, Typer, echo
 
-from hotbox._types import Ec2Spec, Image, Language
+from hotbox._types import DEFAULT_CONTAINERS, ContainerSpec, Ec2Spec, Image, Language
 from hotbox.app import app_svc
 from hotbox.ec2 import ec2_svc
 from hotbox.utils import determine_lang, handle_filetext
@@ -107,39 +107,61 @@ def create_app(
     ),
     vcpu_count: int = Option(
         1,
-        "-v",
         "--vcpu-count",
         help="Number of vcpus.",
     ),
     mem_size_mib: int = Option(
         256,
-        "-m",
         "--mem-size-mib",
         help="Memory size in MiB.",
     ),
     fs_size_mib: int = Option(
         50,
-        "-s",
         "--fs-size-mib",
         help="Size of the rootfs in MiB.",
     ),
+    image: str = Option(
+        None,
+        "--image",
+        help="Base docker image. For example: golang:1.20, python:3.11-slim.",
+    ),
+    build: str = Option(
+        None, "--build", help="The build command to run for your code, if necessary."
+    ),
+    install: str = Option(
+        None,
+        "--install",
+        help="The install command that installs dependencies for your code.",
+    ),
+    entrypoint: str = Option(
+        None, "--entrypoint", help="The entrypoint command that starts your code."
+    ),
 ) -> None:
     echo("Creating app!")
-    lang = determine_lang(app_code_path=app_code_path)
-    if lang is None:
-        echo(
-            message="Unsupported application content. "
-            + "Please use a supported language: "
-            + ",".join(list(map(lambda x: x.name, Language))),
-            err=True,
+    if image is None:
+        lang = determine_lang(app_code_path=app_code_path)
+        if lang is None:
+            echo(
+                message="Unsupported application content. "
+                + "Please use a supported language: "
+                + ",".join(list(map(lambda x: x.name, Language))),
+                err=True,
+            )
+            raise Exit(1)
+        build_image = getattr(Image, lang.name)
+        container_spec = DEFAULT_CONTAINERS[build_image]
+    else:
+        container_spec = ContainerSpec(
+            image=image,
+            install=install,
+            entrypoint=entrypoint,
+            build=build,
         )
-        raise Exit(1)
-    build_image = getattr(Image, lang.name)
     with tempfile.TemporaryDirectory() as tmpdir:
         bundle_path = app_svc.create_app_bundle(
             app_name=app_name,
             app_code_path=app_code_path,
-            build_image=build_image,
+            container_spec=container_spec,
             vcpu_count=vcpu_count,
             mem_size_mib=mem_size_mib,
             tmpdir=tmpdir,

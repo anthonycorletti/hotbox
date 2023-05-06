@@ -9,12 +9,8 @@ import httpx
 from httpx import Response
 from jinja2 import Template
 
-from hotbox._types import GetAppsResponse, Image, Routes
-from hotbox.const import (
-    DEFAULT_IMAGE_TEMPLATE_DIR,
-    DEFAULT_LANG_TEMPLATE_DIR,
-    DEFAULT_RUN_APP_TEMPLATE_FILEPATH,
-)
+from hotbox._types import ContainerSpec, GetAppsResponse, Routes
+from hotbox.const import DEFAULT_IMAGE_TEMPLATE_DIR, DEFAULT_RUN_APP_TEMPLATE_FILEPATH
 from hotbox.settings import env
 
 
@@ -26,7 +22,7 @@ class AppService:
         self,
         app_name: str,
         app_code_path: str,
-        build_image: Image,
+        container_spec: ContainerSpec,
         vcpu_count: int,
         mem_size_mib: int,
         fs_size_mib: int,
@@ -47,9 +43,9 @@ class AppService:
             dirs_exist_ok=True,
         )
         self._create_image(
-            image=build_image,
             image_dir=_image_dir,
             fs_size_mib=fs_size_mib,
+            container_spec=container_spec,
         )
         self._create_run_app(
             app_name=app_name,
@@ -66,40 +62,41 @@ class AppService:
         )
         return f"{bundle_path}.tar.gz"
 
-    def _create_image(self, image: Image, image_dir: str, fs_size_mib: int) -> None:
+    def _create_image(
+        self, container_spec: ContainerSpec, image_dir: str, fs_size_mib: int
+    ) -> None:
         self._create_dockerfile(
             image_dir=image_dir,
-            image=image,
+            container_spec=container_spec,
         )
         self._create_entrypoint(
             image_dir=image_dir,
-            image=image,
             fs_size_mib=fs_size_mib,
         )
         self._create_start_script(
             image_dir=image_dir,
-            image=image,
+            container_spec=container_spec,
         )
 
     def _create_dockerfile(
         self,
         image_dir: str,
-        image: Image,
+        container_spec: ContainerSpec,
     ) -> None:
-        _install = self._get_install_steps(image=image)
-        _build = self._get_build_steps(image=image)
         with open(f"{image_dir}/Dockerfile.j2") as f:
             template = Template(f.read()).render(
-                image=image.value,
-                install=_install,
-                build=_build,
+                image=str(container_spec.image),
+                install=container_spec.install,
+                build=container_spec.build,
             )
         with open(f"{image_dir}/Dockerfile", "w") as f:
             f.write(template)
         os.remove(f"{image_dir}/Dockerfile.j2")
 
     def _create_entrypoint(
-        self, image_dir: str, fs_size_mib: int, image: Image
+        self,
+        image_dir: str,
+        fs_size_mib: int,
     ) -> None:
         with open(f"{image_dir}/entrypoint.j2") as f:
             template = Template(f.read()).render(
@@ -109,28 +106,16 @@ class AppService:
             f.write(template)
         os.remove(f"{image_dir}/entrypoint.j2")
 
-    def _get_install_steps(self, image: Image) -> str:
-        with open(f"{DEFAULT_LANG_TEMPLATE_DIR}/{image.name}/install") as f:
-            return f.read().strip()
-
-    def _get_build_steps(self, image: Image) -> str:
-        with open(f"{DEFAULT_LANG_TEMPLATE_DIR}/{image.name}/build") as f:
-            return f.read().strip()
-
-    def _create_start_script(self, image_dir: str, image: Image) -> None:
-        _entrypoint = self._get_entrypoint(image=image)
+    def _create_start_script(
+        self, image_dir: str, container_spec: ContainerSpec
+    ) -> None:
         with open(f"{image_dir}/start.sh.j2") as f:
             template = Template(f.read()).render(
-                image=image,
-                entrypoint=_entrypoint,
+                entrypoint=container_spec.entrypoint,
             )
         with open(f"{image_dir}/start.sh", "w") as f:
             f.write(template)
         os.remove(f"{image_dir}/start.sh.j2")
-
-    def _get_entrypoint(self, image: Image) -> str:
-        with open(f"{DEFAULT_LANG_TEMPLATE_DIR}/{image.name}/entrypoint") as f:
-            return f.read().strip()
 
     def _create_run_app(
         self, app_name: str, vcpu_count: int, mem_size_mib: int, tmpdir: str

@@ -112,7 +112,7 @@ class AppService:
         image_dir: str,
         container_spec: ContainerSpec,
     ) -> None:
-        if isinstance(container_spec.image, Image):
+        if type(container_spec.image) == Image:
             image = container_spec.image.value
         else:
             image = container_spec.image

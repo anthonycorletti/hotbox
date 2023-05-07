@@ -96,7 +96,7 @@ class DeleteAppsResponse(BaseModel):
 
 
 class ContainerSpec(BaseModel):
-    image: Union[Image, StrictStr]
+    image: Union[StrictStr, Image]
     install: Optional[StrictStr]
     entrypoint: Optional[StrictStr]
     build: Optional[StrictStr]

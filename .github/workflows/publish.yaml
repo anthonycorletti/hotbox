@@ -39,3 +39,24 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
         run: inv publish
+
+      - name: docker-build latest
+        run: inv docker-build
+
+      - name: get latest tag
+        id: latest_tag
+        run: |
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+
+      - name: docker tag
+        run: inv docker-tag --dst-tag ${{ steps.latest_tag.outputs.latest_tag }}
+
+      - name: docker-push
+        env:
+          CR_PAT: ${{ secrets.CR_PAT }}
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+        run: |
+          echo ${{ env.CR_PAT }} | docker login ghcr.io -u ${{ env.GH_USERNAME }} --password-stdin
+          inv docker-push
+          inv docker-push --tag ${{ steps.latest_tag.outputs.latest_tag }}

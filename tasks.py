@@ -1,4 +1,5 @@
 from enum import Enum, unique
+from typing import Optional
 
 from invoke import task
 from invoke.context import Context
@@ -245,10 +246,9 @@ def run_uvicorn(ctx: Context) -> None:
 class BumpType(Enum):
     MAJOR = "major"
     MINOR = "minor"
-    MICRO = "micro"
 
 
-def _bump_version(version: str, bump: BumpType) -> str:
+def _bump_version(version: str, bump: Optional[BumpType] = None) -> str:
     """Bump a version string.
 
     Args:
@@ -265,15 +265,13 @@ def _bump_version(version: str, bump: BumpType) -> str:
         v = Version(f"{v.major + 1}.0.0")
     elif bump == BumpType.MINOR:
         v = Version(f"{v.major}.{v.minor + 1}.0")
-    elif bump == BumpType.MICRO:
-        v = Version(f"{v.major}.{v.minor}.{v.micro + 1}")
     else:
-        raise ValueError(f"Invalid bump type: {bump}")
+        v = Version(f"{v.major}.{v.minor}.{v.micro + 1}")
     return str(v)
 
 
 @task(aliases=["uv"])
-def update_version_number(ctx: Context, part: BumpType = BumpType.MICRO) -> None:
+def update_version_number(ctx: Context, part: Optional[BumpType] = None) -> None:
     """update version number
 
     Specify the part of the version number to bump. The default is to bump the
@@ -292,3 +290,63 @@ def update_version_number(ctx: Context, part: BumpType = BumpType.MICRO) -> None
             else:
                 f.write(line)
     print(f"New version: {new_version}")
+
+
+@task
+def docker_build(ctx: Context, tag: str = "latest") -> None:
+    """docker build
+
+    Build the docker image.
+    """
+    ctx.run(
+        f"docker build -t ghcr.io/anthonycorletti/hotbox:{tag} .",
+        pty=True,
+        echo=True,
+    )
+
+
+@task
+def docker_run(
+    ctx: Context,
+    mode: str = "-d",
+    tag: str = "latest",
+    host_port: int = 8420,
+    container_port: int = 8420,
+) -> None:
+    """docker run
+
+    Run the docker image.
+    """
+    ctx.run(
+        f"docker run {mode} -p {host_port}:{container_port} "
+        f"ghcr.io/anthonycorletti/hotbox:{tag}",
+        pty=True,
+        echo=True,
+    )
+
+
+@task
+def docker_push(ctx: Context, tag: str = "latest") -> None:
+    """docker push
+
+    Push the docker image.
+    """
+    ctx.run(
+        f"docker push ghcr.io/anthonycorletti/hotbox:{tag}",
+        pty=True,
+        echo=True,
+    )
+
+
+@task
+def docker_tag(ctx: Context, dst_tag: str, src_tag: str = "latest") -> None:
+    """docker tag
+
+    Tag the docker image.
+    """
+    ctx.run(
+        f"docker tag ghcr.io/anthonycorletti/hotbox:{src_tag} "
+        f"ghcr.io/anthonycorletti/hotbox:{dst_tag}",
+        pty=True,
+        echo=True,
+    )

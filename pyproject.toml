@@ -15,15 +15,16 @@ requires-python = ">=3.8"
 dependencies = [
     "boto3 >=1.20.10",
     "fastapi >=0.70.0",
-    "typer >=0.4.0",
-    "pydantic >=1.8.2",
-    "rich >=10.12.0",
-    "jinja2 >=3.0.2",
-    "python-multipart >=0.0.5",
-    "uvicorn >=0.15.0",
     "httpx >=0.21.1",
-    "python-dotenv >=0.19.1",
+    "gunicorn >=20.1.0",
+    "jinja2 >=3.0.2",
     "orjson >=3.6.4",
+    "pydantic >=1.8.2",
+    "python-dotenv >=0.19.1",
+    "python-multipart >=0.0.5",
+    "rich >=10.12.0",
+    "typer >=0.4.0",
+    "uvicorn >=0.15.0",
 ]
 [[project.authors]]
 name = "Anthony Corletti"
@@ -34,19 +35,19 @@ hotbox = "hotbox.cli.main:app"
 
 [project.optional-dependencies]
 dev = [
-    "mypy <1.1.1", # https://github.com/pydantic/pydantic/issues/5190
     "black >=21.10b0",
-    "ruff >=0.0.98",
-    "pre-commit >=2.17.0",
-    "mkdocs >=1.4.2",
-    "mdx-include >=1.4.2",
-    "mkdocs-material >=9.1.5",
+    "coverage >=6.1.1",
     "invoke >=1.6.0",
+    "mdx-include >=1.4.2",
+    "mkdocs >=1.4.2",
+    "mkdocs-material >=9.1.5",
+    "mypy <1.1.1", # https://github.com/pydantic/pydantic/issues/5190
     "packaging >=21.0",
+    "pre-commit >=2.17.0",
     "pytest >=6.2.5",
     "pytest-asyncio >=0.20.3",
-    "coverage >=6.1.1",
     "pytest-cov >=3.0.0",
+    "ruff >=0.0.98",
 ]
 
 [project.urls]

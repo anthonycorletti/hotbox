@@ -42,6 +42,9 @@ jobs:
       - name: test
         run: inv test
 
+      - name: docker-build
+        run: inv docker-build
+
       - name: upload coverage
         if: github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v3

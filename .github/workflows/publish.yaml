@@ -41,14 +41,23 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
         run: inv publish
 
-      - name: docker-build latest
-        run: inv docker-build
-
       - name: get latest tag
         id: latest_tag
         run: |
           LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
+
+      - name: set up qemu
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: "linux/arm64/v8"
+
+      - name: docker build
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          platforms: "linux/arm64/v8"
+          tags: ghcr.io/${{ github.repository }}:latest
 
       - name: docker tag
         run: inv docker-tag --dst-tag ${{ steps.latest_tag.outputs.latest_tag }}

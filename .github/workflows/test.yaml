@@ -43,18 +43,19 @@ jobs:
       - name: test
         run: inv test
 
-      # - name: set up qemu
-      #   uses: docker/setup-qemu-action@v2
-      #   with:
-      #     platforms: "arm64/v8"
+      - name: set up qemu
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: "linux/arm64/v8"
 
-      - name: docker-build latest
-        run: inv docker-build
+      # - name: docker build
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     push: false
+      #     platforms: "linux/arm64/v8"
 
       - name: docker build
-        uses: docker/build-push-action@v3
-        with:
-          push: false
+        run: inv docker-build
 
       - name: upload coverage
         if: github.ref == 'refs/heads/main'

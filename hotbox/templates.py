@@ -291,32 +291,49 @@ echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docke
 apt-get update -y
 apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-# Run hotbox
-docker run -d --restart=always --name hotbox -p 8420:8420 ghcr.io/anthonycorletti/hotbox:latest
-
-# Run nginx
-docker run -d --restart=always --name nginx -p 80:80 -p 443:443 nginx:latest
-
-# Create traefik config
-cat <<EOF > traefik.toml
-[entryPoints]
-  [entryPoints.api]
-    address = ":8080"
-  [entryPoints.hotbox]
-    address = ":8420"
-
-[api]
-  insecure = true
-  dashboard = true
-
-[providers.docker]
-  endpoint = "unix:///var/run/docker.sock"
-  exposedByDefault = false
+# Install nginx
+# TODO: TLS
+apt-get install nginx -y
+rm /etc/nginx/sites-enabled/default
+cat <<EOF > /etc/nginx/sites-enabled/hotbox
+server {
+    listen 8080;
+    server_name _;
+    location / {
+        proxy_pass http://localhost:8420;
+    }
+}
 EOF
 
+# Install hotbox
+apt install software-properties-common -y
+add-apt-repository ppa:deadsnakes/ppa -y
+apt install python3.10 python3.10-distutils -y
+curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
+python3.10 -m pip install --upgrade pip
+python3.10 -m pip install hotbox
 
-# Run traefik
-docker run -d --restart=always --name traefik -p 8080:8080 -v /root/traefik.toml:/etc/traefik/traefik.toml traefik:v2.4
+# Create systemd service for hotbox
+cat <<EOF > /etc/systemd/system/hotbox.service
+[Unit]
+Description=Hotbox
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/bin/hotbox server run --port 8420
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable hotbox
+systemctl start hotbox
+
+systemctl restart nginx
 """  # noqa: E501
 
 

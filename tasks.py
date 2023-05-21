@@ -299,7 +299,8 @@ def docker_build(ctx: Context, tag: str = "latest") -> None:
     Build the docker image.
     """
     ctx.run(
-        f"docker build -t ghcr.io/anthonycorletti/hotbox:{tag} .",
+        "docker build --platform linux/arm64/v8 "
+        f"-t ghcr.io/anthonycorletti/hotbox:{tag} .",
         pty=True,
         echo=True,
     )

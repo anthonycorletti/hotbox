@@ -6,7 +6,7 @@ on:
       - created
 
 jobs:
-  publish:
+  main:
     runs-on: ubuntu-latest
     strategy:
       matrix:

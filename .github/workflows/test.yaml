@@ -8,12 +8,16 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  test:
+  main:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
+        os: [ubuntu-latest]
+        architecture: [arm64]
         python-version: ["3.8", "3.9", "3.10"]
       fail-fast: false
+
     steps:
       - name: checkout
         uses: actions/checkout@v3

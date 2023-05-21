@@ -13,10 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        architecture: [linux/arm64/v8]
         python-version: ["3.8", "3.9", "3.10"]
-      fail-fast: false
 
     steps:
       - name: checkout
@@ -46,8 +43,18 @@ jobs:
       - name: test
         run: inv test
 
-      - name: docker-build
-        run: inv docker-build
+      - name: set up qemu
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: "arm64/v8"
+
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: docker build
+        uses: docker/build-push-action@v3
+        with:
+          push: false
 
       - name: upload coverage
         if: github.ref == 'refs/heads/main'

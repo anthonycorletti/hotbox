@@ -292,7 +292,6 @@ apt-get update -y
 apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
 # Install nginx
-# TODO: TLS
 apt-get install nginx -y
 rm /etc/nginx/sites-enabled/default
 cat <<EOF > /etc/nginx/sites-enabled/hotbox

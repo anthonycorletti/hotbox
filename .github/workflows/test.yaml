@@ -54,9 +54,6 @@ jobs:
           push: false
           platforms: "linux/arm64/v8"
 
-      # - name: docker build
-      #   run: inv docker-build
-
       - name: upload coverage
         if: github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v3

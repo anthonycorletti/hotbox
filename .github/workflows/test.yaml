@@ -48,14 +48,14 @@ jobs:
         with:
           platforms: "linux/arm64/v8"
 
-      # - name: docker build
-      #   uses: docker/build-push-action@v3
-      #   with:
-      #     push: false
-      #     platforms: "linux/arm64/v8"
-
       - name: docker build
-        run: inv docker-build
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          platforms: "linux/arm64/v8"
+
+      # - name: docker build
+      #   run: inv docker-build
 
       - name: upload coverage
         if: github.ref == 'refs/heads/main'

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from jinja2 import Template
 from pydantic import BaseModel, StrictStr
@@ -6,7 +6,7 @@ from pydantic import BaseModel, StrictStr
 
 class BaseTemplate(BaseModel):
     content: StrictStr
-    inputs: Dict[StrictStr, StrictStr] = dict()
+    inputs: Dict[StrictStr, Any] = dict()
 
     def render(self) -> str:
         return Template(self.content).render(**self.inputs)
@@ -281,6 +281,10 @@ tar -xvf firecracker-${FC_VERSION}-${ARCH}.tgz
 cp release-${FC_VERSION}-${ARCH}/firecracker-${FC_VERSION}-${ARCH} /usr/local/bin/firecracker
 cp release-${FC_VERSION}-${ARCH}/jailer-${FC_VERSION}-${ARCH} /usr/local/bin/jailer
 rm -rf firecracker-${FC_VERSION}-${ARCH}.tgz release-${FC_VERSION}-${ARCH}/
+
+{% if enable_nvidia_support %}
+
+{% endif %}
 
 # Install docker
 apt-get remove docker docker-engine docker.io containerd runc -y

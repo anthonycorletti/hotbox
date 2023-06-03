@@ -28,8 +28,8 @@ class Ec2MetalType(str, Enum):
     """Ec2MetalType is the type of EC2 instance to use for hotbox."""
 
     a1_metal = "a1.metal"
-    i3_metal = "i3.metal"
-    g4dn_metal = "g4dn.metal"
+    g5g_metal = "g5g.metal"
+    c6g_metal = "c6g.metal"
 
 
 class HotboxSpec(BaseModel):

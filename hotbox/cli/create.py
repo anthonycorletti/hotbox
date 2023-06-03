@@ -4,7 +4,14 @@ from typing import List
 import orjson
 from typer import Exit, FileText, Option, Typer, echo
 
-from hotbox._types import DEFAULT_CONTAINERS, ContainerSpec, Ec2Spec, Image, Language
+from hotbox._types import (
+    DEFAULT_CONTAINERS,
+    ContainerSpec,
+    Ec2MetalType,
+    Ec2Spec,
+    Image,
+    Language,
+)
 from hotbox.app import app_svc
 from hotbox.ec2 import ec2_svc
 from hotbox.utils import determine_lang, handle_filetext
@@ -46,6 +53,12 @@ def create_ec2(
         "--security-group-ids",
         help="AWS security group ids. Should be in the region you specify.",
     ),
+    instance_type: Ec2MetalType = Option(
+        Ec2MetalType.a1_metal,
+        "-i",
+        "--instance-type",
+        help="AWS instance type.",
+    ),
     _filetext: FileText = Option(
         None,
         "-f",
@@ -79,6 +92,7 @@ def create_ec2(
             region=region,
             key_name=key_name,
             security_group_ids=security_group_ids,
+            instance_type=instance_type,
         )
     response = ec2_svc.create(
         spec=content,

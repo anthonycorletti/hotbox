@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import boto3
 
-from hotbox._types import Ec2Spec
+from hotbox._types import Ec2MetalType, Ec2Spec
 from hotbox.templates import BaseEc2UserdataTemplate
 
 
@@ -37,26 +37,32 @@ class Ec2Service:
     def _template_userdata(
         self,
         firecracker_version: str,
+        enable_nvidia_support: bool,
     ) -> str:
         return BaseEc2UserdataTemplate(
             inputs={
                 "firecracker_version": firecracker_version,
+                "enable_nvidia_support": enable_nvidia_support,
             }
         ).render()
 
     def create(self, spec: Ec2Spec, firecracker_version: str) -> Dict:
         ec2_client = self.ec2_client(region_name=spec.region)
+        enable_nvidia_support = spec.instance_type in [Ec2MetalType.g5g_metal]
         return ec2_client.run_instances(
             ImageId=self.get_image_id(ec2_client=ec2_client),
             KeyName=spec.key_name,
-            InstanceType=spec.instance_type,
+            InstanceType=spec.instance_type.value,
             MinCount=spec.min_count,
             MaxCount=spec.max_count,
             Monitoring=spec.monitoring_enabled,
             SecurityGroupIds=spec.security_group_ids,
             BlockDeviceMappings=spec.block_device_mappings,
             TagSpecifications=spec.tag_specifications,
-            UserData=self._template_userdata(firecracker_version=firecracker_version),
+            UserData=self._template_userdata(
+                firecracker_version=firecracker_version,
+                enable_nvidia_support=enable_nvidia_support,
+            ),
         )
 
     def get(self, region: str) -> Dict:

@@ -97,8 +97,6 @@ exclude = '''
 [tool.mypy]
 ignore_missing_imports = true
 disallow_untyped_defs = true
-mypy_path = ["hotbox", "tests"]
-exclude = ["dist", "build", ".venv"]
 
 [tool.coverage.run]
 source = ["hotbox", "tests"]

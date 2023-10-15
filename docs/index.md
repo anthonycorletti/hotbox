@@ -2,7 +2,7 @@
   <a href="https://hotbox.corletti.xyz"><img src="https://github.com/anthonycorletti/hotbox/blob/main/docs/img/logo.png?raw=true" alt="hotbox"></a>
 </p>
 <p align="center">
-    <em>🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>
+    <em>🏃 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️</em>
 </p>
 <p align="center">
 <a href="https://github.com/anthonycorletti/hotbox/actions?query=workflow%3Atest" target="_blank">
@@ -27,7 +27,7 @@
 
 ---
 
-🚀 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
+🏃 Run your code 📦 on Firecracker MicroVMs 🔥 in the cloud ☁️
 
 ## 👨‍💻 Who is this for?
 

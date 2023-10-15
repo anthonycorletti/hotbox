@@ -1,7 +1,8 @@
 import os
 import sys
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class _Env(BaseSettings):

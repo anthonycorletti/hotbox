@@ -1,15 +1,12 @@
 [build-system]
-requires = [
-    "setuptools >=65.0",
-    "wheel >=0.36.2",
-]
+requires = ["setuptools >=65.0", "wheel >=0.36.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "hotbox"
 dynamic = ["version"]
 readme = "README.md"
-license = {text = 'See LICENSE'}
+license = { text = 'See LICENSE' }
 description = "hotbox"
 requires-python = ">=3.8"
 dependencies = [
@@ -20,6 +17,7 @@ dependencies = [
     "jinja2 >=3.0.2",
     "orjson >=3.6.4",
     "pydantic >=1.8.2",
+    "pydantic-settings >=0.4.0",
     "python-dotenv >=0.19.1",
     "python-multipart >=0.0.5",
     "rich >=10.12.0",
@@ -41,7 +39,7 @@ dev = [
     "mdx-include >=1.4.2",
     "mkdocs >=1.4.2",
     "mkdocs-material >=9.1.5",
-    "mypy <1.1.1", # https://github.com/pydantic/pydantic/issues/5190
+    "mypy <1.1.1",             # https://github.com/pydantic/pydantic/issues/5190
     "packaging >=21.0",
     "pre-commit >=2.17.0",
     "pytest >=6.2.5",
@@ -54,7 +52,7 @@ dev = [
 Documentation = "https://github.com/anthonycorletti/hotbox"
 
 [tool.setuptools.dynamic]
-version = {attr = "hotbox.__version__"}
+version = { attr = "hotbox.__version__" }
 
 [tool.ruff]
 line-length = 88
@@ -104,7 +102,4 @@ omit = ["*__init__.py"]
 parallel = true
 
 [tool.coverage.report]
-exclude_lines = [
-    'pragma: no cover',
-    'raise NotImplementedError'
-]
+exclude_lines = ['pragma: no cover', 'raise NotImplementedError']
